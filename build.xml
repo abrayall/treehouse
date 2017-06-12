@@ -1,0 +1,54 @@
+<project name="treehouse" default="build" basedir=".">
+
+	<property name="source.dir" value="src" />
+	<property name="library.dir" value="lib" />
+	<property name="resource.dir" value="resources" />
+	<property name="build.dir" value="build" />
+	<property name="artifact.name" value="treehouse" />
+
+	<condition property="uptodate">
+		<uptodate targetfile="${build.dir}/artifacts/${artifact.name}.tar" >
+			<srcfiles dir="." includes="build.xml" />
+		    <srcfiles dir= "${source.dir}" includes="**/*.java" />
+			<srcfiles dir= "${resource.dir}" includes="**/*" />
+		</uptodate>
+	</condition>
+		
+	<target name="setup" unless="uptodate">
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/work" />
+		<mkdir dir="${build.dir}/work/bin" />
+	</target>
+		
+	<target name="compile" unless="uptodate">
+		<javac srcdir="${source.dir}" destdir="${build.dir}/work/bin" target="1.8" source="1.8" includeantruntime="false">
+			<classpath>
+				<fileset dir="${library.dir}/main" includes="*.jar" />
+			</classpath>
+		</javac>
+	</target>
+		
+	<target name="test" unless="uptodate">
+	</target>
+	
+	<target name="package" unless="uptodate">
+		<jar destfile="${build.dir}/artifacts/${artifact.name}.jar">
+			<fileset dir="${basedir}" includes="version.properties" />
+			<fileset dir="${build.dir}/work/bin" includes="**/*.class" />
+		</jar>
+		<tar destfile="${build.dir}/artifacts/${artifact.name}.tar">
+			<tarfileset dir="${build.dir}/artifacts" includes="*.jar" prefix="lib" dirmode="777" filemode="777" />
+			<tarfileset dir="${library.dir}/main" includes="*.jar" prefix="lib" dirmode="777" filemode="777" />
+			<tarfileset dir="${resource.dir}/scripts" includes="*.*" prefix="bin" dirmode="777" filemode="777" />
+		</tar>
+	</target>
+	
+	<target name="build" depends="setup, compile, test, package" unless="uptodate" />
+	
+	<target name="deploy" depends="build">
+		<mkdir dir="/opt/${artifact.name}" />
+		<mkdir dir="/opt/${artifact.name}" />
+		<untar src="${build.dir}/artifacts/${artifact.name}.tar" dest="/opt/${artifact.name}" />
+	</target>
+</project>
