@@ -13,14 +13,12 @@ public class Version {
 	private int major = 0;
 	private int minor = 0;
 	private int maintenance = 0;
-	private int revision = 0;
 	
 	private Version() {}
-	private Version(int major, int minor, int maintenance, int revision) {
+	private Version(int major, int minor, int maintenance) {
 		this.major = major;
 		this.minor = minor;
 		this.maintenance = maintenance;
-		this.revision = revision;
 	}
 	
 	public int getMajor() {
@@ -35,9 +33,6 @@ public class Version {
 		return maintenance;
 	}
 	
-	public int getRevision() {
-		return revision;
-	}
 	
 	public int compare(String version) {
 		return this.compare(parse(version));
@@ -47,7 +42,6 @@ public class Version {
 		if (this.major != version.major) return this.major > version.major ? 1 : -1;
 		if (this.minor != version.minor) return this.minor > version.minor ? 1 : -1;
 		if (this.maintenance != version.maintenance) return this.maintenance > version.maintenance ? 1 : -1;
-		if (this.revision != version.revision) return this.revision > version.revision ? 1 : -1;
 		return 0;
 	}
 	
@@ -68,7 +62,7 @@ public class Version {
 	}
 	
 	public String toString() {
-		return this.major + "." + this.minor + "." + this.maintenance + "." + this.revision;
+		return this.major + "." + this.minor + "." + this.maintenance;
 	}
 	
 	public static Version getVersion() {
@@ -87,9 +81,6 @@ public class Version {
 		
 		if (tokens.length > 2)
 			version.maintenance = integer(tokens[2], 0);
-		
-		if (tokens.length > 3)
-			version.revision = integer(tokens[3], 0);
 
 		return version;
 	}
