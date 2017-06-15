@@ -1,28 +1,71 @@
 package treehouse;
 
 import static javax.lang.System.println;
-import static javax.util.List.*;
+
+import java.util.Arrays;
 
 import javax.io.File;
+
 import treehouse.version.Version;
 
 public class Main {
 	public static void main(String[] arguments) throws Exception {
+		println("---------------------------------------");
 		println("Treehouse - Mobile App Toolchain v" + Version.getVersion());
 		println("---------------------------------------");
-		println("");
-		//println("Cordova version: " + new Cordova().getVersion());
-		//println("Fastline version: " + new Fastlane().getVersion());
 		
-		File current = new File(".");
-		if (new File(current, "app.conf").exists() == false)
-			println("Not a treehouse project directory");
-		else {
-			Project project = new Project(current);
-			if (arguments.length > 0 && "create".equals(list(arguments).get(0)))
-				project.load();
-			else	
-				project.run();
-		}
+		App app = new App();
+		Engine engine = new Engine(new File("."));
+		if (matches(arguments, empty()) || matches(arguments, "run"))
+			engine.run(app);
+		else if (matches(arguments, "run", "continous") || matches(arguments, "develop") || matches(arguments, "dev"))
+			engine.run(app, true);
+		else
+			help();
+	}
+	
+	public static void help() {
+		println();
+		println("Usage:");
+		println("treehouse [command]");
+		println("  commands: ");
+		println("    - run:     runs the app in browser");
+		println("    - develop: runs the app in browser and reloads on code changes");
+		println();
+	}
+	
+	public static void error(String message) {
+		exit("Error: " + message, -1);
+	}
+	
+	public static void exit(String message) {
+		exit(message, 1);
+	}
+	
+	public static void exit(String message, int code) {
+		System.out.println(message);
+		System.exit(code);
+	}
+	
+	protected static boolean matches(String[] arguments, String... values) {
+		return Arrays.equals(arguments, values);
+	}
+	
+	protected static String[] empty() {
+		return new String[0];
 	}
 }
+
+
+//File configuration = new File(current, "app.conf");
+
+//if (configuration.exists() == false)
+//	error("Not a treehouse project directory");
+
+//Project project = new Project(current);
+//if (arguments.length > 0 && "create".equals(list(arguments).get(0)))
+//	project.load();
+//else	
+//	project.run();
+
+//App app = App.load(configuration);
