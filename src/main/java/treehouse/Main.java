@@ -20,6 +20,8 @@ public class Main {
 			engine.run(app);
 		else if (matches(arguments, "run", "continous") || matches(arguments, "develop") || matches(arguments, "dev"))
 			engine.run(app, true);
+		else if (matches(arguments, "build"))
+			engine.build(app);
 		else
 			help();
 	}
@@ -31,6 +33,7 @@ public class Main {
 		println("  commands: ");
 		println("    - run:     runs the app in browser");
 		println("    - develop: runs the app in browser and reloads on code changes");
+		println("    - build:   builds the app for all supported platforms");
 		println();
 	}
 	

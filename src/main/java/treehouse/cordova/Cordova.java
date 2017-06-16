@@ -1,10 +1,13 @@
 package treehouse.cordova;
 
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 
 import javax.io.File;
 import javax.io.Streams;
 import javax.lang.Try;
+import javax.util.Map;
 
 import treehouse.App;
 import treehouse.util.Tool;
@@ -19,7 +22,7 @@ public class Cordova extends Tool {
 		return Try.attempt(() -> execute("--version"), "0.0.0");
 	}
 	
-	public Cordova initialize(File directory) throws Exception {
+	public Cordova install() throws Exception {
 		// install node.js
 		// install cordova
 		return this;
@@ -51,9 +54,12 @@ public class Cordova extends Tool {
 		return this.patch(directory);
 	}
 
-	public Cordova build(App app, File directory) throws Exception {
+	public Cordova build(App app, File directory, String platform, Map<String, String> environment) throws Exception {
 		this.setup(app, directory);
-		System.out.println(this.execute(directory, "build"));
+		new BufferedReader(new InputStreamReader(this.process(environment, directory, "build").start().getInputStream())).lines().forEach(line -> {
+			System.out.println(line);
+		});
+		
 		return this;
 	}
 	

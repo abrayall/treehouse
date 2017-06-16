@@ -1,11 +1,13 @@
 package treehouse;
 
-import static javax.net.Urls.*;
+import static javax.net.Urls.url;
+import static javax.util.Map.*;
 
 import javax.io.File;
 import javax.io.File.FileWatcher;
 import javax.lang.Try;
 
+import treehouse.android.Android;
 import treehouse.browser.Browser;
 import treehouse.cordova.Cordova;
 import treehouse.fastlane.Fastlane;
@@ -14,16 +16,16 @@ public class Engine {
 	
 	private File directory;
 	private Cordova cordova;
+	private Android android;
 	
 	public Engine(File directory) {
 		this.directory = directory;
 		this.cordova = new Cordova();
+		this.android = new Android();
 	}
 	
 	public Engine build(App app) throws Exception {
-		this.source().synchronizer(this.work("cordova/www")).synchronize(false);
-		this.cordova().build(app, this.work("cordova"));
-		return this;
+		return new Builder(this, app, this.work("cordova")).start();
 	}
 	
 	public Engine run(App app) throws Exception {
@@ -31,8 +33,7 @@ public class Engine {
 	}
 	
 	public Engine run(App app, boolean continous) throws Exception {
-		new Runner(this, app, this.work("cordova")).start(continous);
-		return this;
+		return new Runner(this, app, this.work("cordova")).start(continous);
 	}
 
 	public File source() {
@@ -55,6 +56,10 @@ public class Engine {
 		return this.cordova;
 	}
 
+	public Android android() throws Exception {
+		return this.android;
+	}
+	
 	public Fastlane fastlane() throws Exception {
 		return null;
 	}
@@ -90,7 +95,7 @@ public class Engine {
 		
 		public Engine start(boolean continous) throws Exception {
 			System.out.println("Running app" + (continous == true ? " [continous mode]" : "") + "...");
-			this.cordova = this.engine.cordova().initialize(this.directory).run(this.app, this.directory);
+			this.cordova = this.engine.cordova().run(this.app, this.directory);
 			System.out.println("Started cordova server");
 			
 			Thread.sleep(2000);
@@ -132,6 +137,29 @@ public class Engine {
 		
 		public void sync() throws Exception {
 			//this.engine.source().synchronizer(this.engine.work("cordova/www")).synchronize(false);
+		}
+	}
+	
+	private class Builder {
+
+		//MAybe Android builder, AppleBuilder, etc...
+		private App app;
+		private File directory;
+		private Engine engine;
+
+		public Builder(Engine engine, App app, File directory) {
+			this.engine = engine;
+			this.app = app;
+			this.directory = directory;
+		}
+		
+		public Engine start() throws Exception {
+			System.out.println("Building app...");
+			this.engine.cordova().build(this.app, this.directory, "", map(
+				entry("ANDROID_HOME", this.engine.android().home().toString())
+			));
+			
+			return engine;
 		}
 	}
 }
