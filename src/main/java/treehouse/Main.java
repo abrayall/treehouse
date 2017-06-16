@@ -13,7 +13,10 @@ public class Main {
 		println("---------------------------------------");
 		println("Treehouse - Mobile App Toolchain v" + Version.getVersion());
 		println("---------------------------------------");
-		
+
+		if (new File("config.xml").exists() == false)
+			error("Not a valid mobile app project directory");
+
 		App app = new App();
 		Engine engine = new Engine(new File("."));
 		if (matches(arguments, empty()) || matches(arguments, "run"))
@@ -25,7 +28,7 @@ public class Main {
 		else
 			help();
 	}
-	
+
 	public static void help() {
 		println();
 		println("Usage:");
@@ -36,24 +39,25 @@ public class Main {
 		println("    - build:   builds the app for all supported platforms");
 		println();
 	}
-	
+
 	public static void error(String message) {
 		exit("Error: " + message, -1);
 	}
-	
+
 	public static void exit(String message) {
 		exit(message, 1);
 	}
-	
+
 	public static void exit(String message, int code) {
-		System.out.println(message);
+		println(message);
+		println();
 		System.exit(code);
 	}
-	
+
 	protected static boolean matches(String[] arguments, String... values) {
 		return Arrays.equals(arguments, values);
 	}
-	
+
 	protected static String[] empty() {
 		return new String[0];
 	}
@@ -68,7 +72,7 @@ public class Main {
 //Project project = new Project(current);
 //if (arguments.length > 0 && "create".equals(list(arguments).get(0)))
 //	project.load();
-//else	
+//else
 //	project.run();
 
 //App app = App.load(configuration);
