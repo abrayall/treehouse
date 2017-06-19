@@ -1,7 +1,9 @@
-package treehouse.fastlane;
+package treehouse.tool.fastlane;
 
 import javax.lang.Try;
-import treehouse.util.Tool;
+
+import treehouse.tool.Tool;
+
 import static javax.util.List.*;
 
 public class Fastlane extends Tool {

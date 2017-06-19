@@ -1,16 +1,14 @@
-package treehouse.cordova;
+package treehouse.tool.cordova;
 
-import java.io.BufferedReader;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 
 import javax.io.File;
 import javax.io.Streams;
 import javax.lang.Try;
 import javax.util.Map;
 
-import treehouse.App;
-import treehouse.util.Tool;
+import treehouse.app.App;
+import treehouse.tool.Tool;
 
 public class Cordova extends Tool {
 
@@ -54,13 +52,9 @@ public class Cordova extends Tool {
 		return this.patch(directory);
 	}
 
-	public Cordova build(App app, File directory, String platform, Map<String, String> environment) throws Exception {
+	public Process build(App app, File directory, String platform, Map<String, String> environment) throws Exception {
 		this.setup(app, directory);
-		new BufferedReader(new InputStreamReader(this.process(environment, directory, "build").start().getInputStream())).lines().forEach(line -> {
-			System.out.println(line);
-		});
-		
-		return this;
+		return this.process(environment, directory, "build").start();
 	}
 	
 	public Process run(App app, File directory) throws Exception {

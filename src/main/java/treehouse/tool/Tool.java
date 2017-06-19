@@ -1,4 +1,4 @@
-package treehouse.util;
+package treehouse.tool;
 
 import static javax.util.Map.*;
 import static javax.util.List.*;

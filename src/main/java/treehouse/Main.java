@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import javax.io.File;
 
+import treehouse.app.App;
 import treehouse.version.Version;
 
 public class Main {

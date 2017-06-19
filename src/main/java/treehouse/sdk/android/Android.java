@@ -1,4 +1,4 @@
-package treehouse.android;
+package treehouse.sdk.android;
 
 
 import javax.io.File;

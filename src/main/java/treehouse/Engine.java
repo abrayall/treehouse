@@ -1,16 +1,22 @@
 package treehouse;
 
-import static javax.net.Urls.url;
-import static javax.util.Map.*;
 
 import javax.io.File;
 import javax.io.File.FileWatcher;
-import javax.lang.Try;
 
-import treehouse.android.Android;
-import treehouse.browser.Browser;
-import treehouse.cordova.Cordova;
-import treehouse.fastlane.Fastlane;
+import static javax.lang.Try.*;
+import static javax.util.Map.*;
+import static javax.net.Urls.url;
+
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+
+import treehouse.app.App;
+import treehouse.sdk.android.Android;
+import treehouse.tool.chrome.Chrome;
+import treehouse.tool.cordova.Cordova;
+import treehouse.tool.cordova.CordovaBuilder;
+import treehouse.tool.fastlane.Fastlane;
 
 public class Engine {
 	
@@ -25,7 +31,16 @@ public class Engine {
 	}
 	
 	public Engine build(App app) throws Exception {
-		return new Builder(this, app, this.work("cordova")).start();
+		for (String platform : CordovaBuilder.platforms()) {
+			File output = new File("build/" + platform + "/").delete();
+			System.out.println("Building for " + platform + "...");
+			CordovaBuilder.builder(platform, this, this.work("cordova")).build(app, map(entry("type", "release"))).onComplete(file -> {
+				attempt(() -> Files.copy(file.toPath(), new File(output, file.name()).mkdirs().toPath(), StandardCopyOption.REPLACE_EXISTING));
+				System.out.println("Build for " + platform + " complete [" + new File(output, file.name()) + "]");
+			});
+		}
+		
+		return this;
 	}
 	
 	public Engine run(App app) throws Exception {
@@ -64,15 +79,15 @@ public class Engine {
 		return null;
 	}
 
-	public Browser browser() throws Exception {
-		return new Browser();
+	public Chrome chrome() throws Exception {
+		return new Chrome();
 	}
 		
 	private class Runner {
 		
 		private Engine engine;
 		private Process cordova;
-		private Browser browser;
+		private Chrome chrome;
 		private FileWatcher watcher;
 		
 		private App app;
@@ -99,7 +114,7 @@ public class Engine {
 			System.out.println("Started cordova server");
 			
 			Thread.sleep(2000);
-			this.browser = this.engine.browser().launch(url("http://localhost:8015/index.html"), Browser.DEV_TOOLS_ENABLED).closed(time -> {
+			this.chrome = this.engine.chrome().launch(url("http://localhost:8015/index.html"), Chrome.DEV_TOOLS_ENABLED).closed(time -> {
 				this.stop();
 			});
 			
@@ -108,7 +123,7 @@ public class Engine {
 			if (continous) {
 				System.out.println("Watching source files for changes...");
 				this.watcher = this.engine.source().watcher((file, operation) -> {
-					Try.attempt(() -> this.reload());
+					attempt(() -> this.reload());
 				}).watch();
 			}
 			
@@ -116,15 +131,15 @@ public class Engine {
 		}
 		
 		public void stop() {
-			Try.attempt(() -> this.watcher.halt());
-			if (this.browser.closed() == false) {
+			attempt(() -> this.watcher.halt());
+			if (this.chrome.closed() == false) {
 				System.out.println("Stopping chrome browser...");
-				this.browser.cancel().close();
+				this.chrome.cancel().close();
 			}
 			
 			if (this.cordova.isAlive()) {
 				System.out.println("Stopping cordova server...");
-				Try.attempt(() -> this.cordova.destroyForcibly().waitFor());
+				attempt(() -> this.cordova.destroyForcibly().waitFor());
 			}
 		}
 
@@ -137,29 +152,6 @@ public class Engine {
 		
 		public void sync() throws Exception {
 			//this.engine.source().synchronizer(this.engine.work("cordova/www")).synchronize(false);
-		}
-	}
-	
-	private class Builder {
-
-		//MAybe Android builder, AppleBuilder, etc...
-		private App app;
-		private File directory;
-		private Engine engine;
-
-		public Builder(Engine engine, App app, File directory) {
-			this.engine = engine;
-			this.app = app;
-			this.directory = directory;
-		}
-		
-		public Engine start() throws Exception {
-			System.out.println("Building app...");
-			this.engine.cordova().build(this.app, this.directory, "", map(
-				entry("ANDROID_HOME", this.engine.android().home().toString())
-			));
-			
-			return engine;
 		}
 	}
 }

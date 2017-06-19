@@ -1,4 +1,4 @@
-package treehouse.browser;
+package treehouse.tool.chrome;
 
 import static javax.lang.System.now;
 import static javax.util.List.list;
@@ -20,15 +20,15 @@ import io.webfolder.cdp.session.Session;
 import io.webfolder.cdp.session.SessionFactory;
 import io.webfolder.cdp.session.SessionInfo;
 
-public class Browser extends Launcher {
+public class Chrome extends Launcher {
 
 	protected Process process;
 	protected SessionFactory factory = new SessionFactory();
-	protected BrowserWatcher watcher;
+	protected ChromeWatcher watcher;
 	
 	public static String DEV_TOOLS_ENABLED = "--auto-open-devtools-for-tabs";
 	
-	public Browser launch(URL url, String... options) throws Exception {
+	public Chrome launch(URL url, String... options) throws Exception {
 		this.process = this.execute(list("--disable-web-security", "--test-type", "--no-sandbox").append(options).append(url.toString()).toArray(new String[0]));
 		return this;
 	}
@@ -76,7 +76,7 @@ public class Browser extends Launcher {
 		return this.factory.create().navigate(url);
 	}
 	
-	public Browser close() {
+	public Chrome close() {
 		if (this.factory != null) {
 			Try.attempt(() -> this.factory.close());
 			this.factory = null;
@@ -94,12 +94,12 @@ public class Browser extends Launcher {
 		return this.process == null || this.process.isAlive() == false;
 	}
 	
-	public Browser closed(Consumer<Long> handler) {
-		this.watcher = new BrowserWatcher(this, handler).watch();
+	public Chrome closed(Consumer<Long> handler) {
+		this.watcher = new ChromeWatcher(this, handler).watch();
 		return this;
 	}
 	
-	public Browser cancel() {
+	public Chrome cancel() {
 		if (this.watcher != null) {
 			this.watcher.halt();
 			while (this.watcher.isAlive() == true)
@@ -109,25 +109,25 @@ public class Browser extends Launcher {
 		return this;
 	}
 	
-	private class BrowserWatcher extends Thread {
+	private class ChromeWatcher extends Thread {
 		
-		private Browser browser;
+		private Chrome chrome;
 		private Consumer<Long> handler;
 		private boolean running = false;
 		
-		public BrowserWatcher(Browser browser, Consumer<Long> handler) {
-			this.browser = browser;
+		public ChromeWatcher(Chrome chrome, Consumer<Long> handler) {
+			this.chrome = chrome;
 			this.handler = handler;
 		}
 
-		public BrowserWatcher watch() {
+		public ChromeWatcher watch() {
 			this.start();
 			return this;
 		}
 		
 		public void run() {
 			this.running = true;
-			while (this.running == true && this.browser.closed() == false)
+			while (this.running == true && this.chrome.closed() == false)
 				Time.sleep(100, TimeUnit.MILLISECONDS);
 				
 			if (this.running == true && this.handler != null) this.handler.accept(now());
