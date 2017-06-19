@@ -27,6 +27,8 @@ public class Main {
 			engine.run(app, true);
 		else if (matches(arguments, "build"))
 			engine.build(app);
+		else if (matches(arguments, "publish"))
+			engine.publish(app, "production");
 		else
 			help();
 	}

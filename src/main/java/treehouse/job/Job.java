@@ -8,6 +8,15 @@ public class Job<T> extends CompletableFuture<T> {
 		this.thenAccept(handler);
 		return this;
 	}
+	
+	public Job<T> onError(Consumer<Throwable> handler) {
+		this.exceptionally(exception -> {
+			handler.accept(exception);
+			return null;
+		});
+		
+		return this;
+	}
 }
 
 
