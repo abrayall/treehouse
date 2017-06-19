@@ -41,7 +41,7 @@ public class Engine {
 	public Engine build(App app, Map<String, String> options) throws Exception {
 		for (String platform : CordovaBuilder.platforms()) {
 			File output = new File("build/" + platform + "/").delete();
-			System.out.println("Building " + app.getName() + " [" + app.getId() + "] for " + platform + "...");
+			System.out.println("Building " + app.getName() + " [id: " + app.getId() + "] [version: " + app.getVersion() + "] for " + platform + "...");
 			CordovaBuilder.builder(platform, this, this.work("cordova")).build(app, options).onComplete(file -> {
 				String artifact = (app.getName() + "." + file.name().split("\\.")[1]).replaceAll(" ", "-").toLowerCase();
 				attempt(() -> Files.copy(file.toPath(), new File(output, artifact).mkdirs().toPath(), StandardCopyOption.REPLACE_EXISTING));

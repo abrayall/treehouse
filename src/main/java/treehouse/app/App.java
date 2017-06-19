@@ -13,6 +13,7 @@ public class App {
 	private String id = "";
 	private String name = "";
 	private String description = "";
+	private String version = "";
 	
 	//private List<String> platforms = list("browser", "ios", "android");
 	//private List<String> plugins = list();
@@ -44,10 +45,20 @@ public class App {
 		return this;
 	}
 	
+	public String getVersion() {
+		return this.version;
+	}
+	
+	public App setVersion(String version) {
+		this.version = version;
+		return this;
+	}
+	
 	protected App set(Properties properties) {
 		this.setId(properties.getProperty("id", this.getId()));
 		this.setName(properties.getProperty("name", this.getName()));
 		this.setDescription(properties.getProperty("description", this.getDescription()));
+		this.setVersion(properties.getProperty("version", this.getVersion()));
 		return this;
 	}
 	
@@ -55,7 +66,8 @@ public class App {
 		return properties(
 			property("id", this.id),
 			property("name", this.name),
-			property("description", this.description)
+			property("description", this.description),
+			property("version", this.version)
 		);
 	}
 	
@@ -69,15 +81,16 @@ public class App {
 	}
 	
 	public String toString() {
-		return "app: [id=" + this.id +", name=" + this.name + "]";
+		return "app: [id=" + this.id +", name=" + this.name + ", version=" + this.version + "]";
 	}
 	
 	public static App fromConfigXml(File file) throws Exception {
 		String contents = Streams.read(file.inputStream());
 		return new App().set(properties(
-			property("id", contents.split("id=\"")[1].split("\"")[0]),
+			property("id", contents.split("<widget")[1].split(">")[0].split("id=\"")[1].split("\"")[0]),
 			property("name", contents.split("<name>")[1].split("</name>")[0]),
-			property("description", contents.split("<description>")[1].split("</description>")[0])
+			property("description", contents.split("<description>")[1].split("</description>")[0]),
+			property("version", contents.split("<widget")[1].split(">")[0].split("version=\"")[1].split("\"")[0])
 		));
 	}
 	
