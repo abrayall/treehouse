@@ -61,12 +61,12 @@ public class Cordova extends Tool {
 	
 	public Process run(App app, File directory) throws Exception {
 		this.setup(app, directory);
-		return javax.lang.Runtime.process(directory.toFile(), new File(directory, "/platforms/browser/cordova/run").toString(), "browser", "--port=8015").start();
+		return javax.lang.Runtime.process(directory.toFile(), new File(directory, "/platforms/browser/cordova/run").toString(), "browser", "--target=none", "--port=8015").start();
 	}
 	
 	protected Cordova patch(File directory) throws Exception {
 		File run = new File(directory, "platforms/browser/cordova/run");
-		run.write(run.read().replace("args.target || \"chrome\"", "args.target || \"none\"").replace("return cordovaServe", "return args.target == \"none\" ? null : cordovaServe"));
+		run.write(run.read().replace("return cordovaServe", "return args.target == \"none\" ? null : cordovaServe"));
 		return this;
 	}
 	
