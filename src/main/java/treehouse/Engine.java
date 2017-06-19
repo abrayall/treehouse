@@ -3,6 +3,7 @@ package treehouse;
 
 import javax.io.File;
 import javax.io.File.FileWatcher;
+import javax.util.Map;
 
 import static javax.lang.Try.*;
 import static javax.util.Map.*;
@@ -31,12 +32,20 @@ public class Engine {
 	}
 	
 	public Engine build(App app) throws Exception {
+		return this.build(app, map(
+			entry("type", "release"),
+			entry("verbose", "false")
+		));
+	}
+	
+	public Engine build(App app, Map<String, String> options) throws Exception {
 		for (String platform : CordovaBuilder.platforms()) {
 			File output = new File("build/" + platform + "/").delete();
-			System.out.println("Building for " + platform + "...");
-			CordovaBuilder.builder(platform, this, this.work("cordova")).build(app, map(entry("type", "release"))).onComplete(file -> {
-				attempt(() -> Files.copy(file.toPath(), new File(output, file.name()).mkdirs().toPath(), StandardCopyOption.REPLACE_EXISTING));
-				System.out.println("Build for " + platform + " complete [" + new File(output, file.name()) + "]");
+			System.out.println("Building " + app.getName() + " [" + app.getId() + "] for " + platform + "...");
+			CordovaBuilder.builder(platform, this, this.work("cordova")).build(app, options).onComplete(file -> {
+				String artifact = (app.getName() + "." + file.name().split("\\.")[1]).replaceAll(" ", "-").toLowerCase();
+				attempt(() -> Files.copy(file.toPath(), new File(output, artifact).mkdirs().toPath(), StandardCopyOption.REPLACE_EXISTING));
+				System.out.println("Build for " + platform + " complete [" + new File(output, artifact) + "]");
 			});
 		}
 		

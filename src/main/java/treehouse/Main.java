@@ -15,10 +15,11 @@ public class Main {
 		println("Treehouse - Mobile App Toolchain v" + Version.getVersion());
 		println("---------------------------------------");
 
-		if (new File("config.xml").exists() == false)
+		File config = new File("config.xml");
+		if (config.exists() == false)
 			error("Not a valid mobile app project directory");
 
-		App app = new App();
+		App app = App.fromConfigXml(config);
 		Engine engine = new Engine(new File("."));
 		if (matches(arguments, empty()) || matches(arguments, "run"))
 			engine.run(app);
