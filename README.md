@@ -6,37 +6,18 @@ Treehouse is a hybrid mobile app toolchain that combines the best open source li
 
 Treehouse = Cordova + Fastlane
 
+### Schedule
+ - v0.1.0 - Support run command with Cordova (including continous / development mode) [Complete]
+ - v0.2.0 - Support build command with Cordova for Android [Started]
+ - v0.3.0 - Support publish command with Fastlane for Play store [Planned]
+ - v0.4.0 - Support build command with Corova for iOS [Planned]
+ - v0.5.0 - Support publish command with Faslane for [Planned]
+ - v0.6.0 - Support create command
+ - v0.7.0 - Support setup command
+ 
 ### Commands
+- treehouse setup [platform]
 - treehouse create [name] [id]
 - treehouse run [platform]
 - treehouse build [platform]
 - treehouse publish [platform] [location]
-
-
-### Directory Structure
- - src
-    - index.html
-	- javascript
-	- css
-	- images
-	- etc
- - test
- - resources
- - work [generated]
- - build [generated]
- - app.json
-
-
-### Features
-  - build, run, deploy
-  - generate icons / splashscreens
-  - generate keys, profiles, etc
-  -
-
-### app.json
-  - name
-  - id
-  - description
-  - author
-  - plugins
-  - icons
