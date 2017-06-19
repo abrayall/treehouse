@@ -4,6 +4,7 @@ import static javax.util.Properties.properties;
 import static javax.util.Properties.property;
 
 import javax.io.File;
+import javax.io.Streams;
 import javax.lang.Strings;
 import javax.util.Properties;
 
@@ -67,12 +68,29 @@ public class App {
 		return template;
 	}
 	
+	public String toString() {
+		return "app: [id=" + this.id +", name=" + this.name + "]";
+	}
+	
+	public static App fromConfigXml(File file) throws Exception {
+		String contents = Streams.read(file.inputStream());
+		return new App().set(properties(
+			property("id", contents.split("id=\"")[1].split("\"")[0]),
+			property("name", contents.split("<name>")[1].split("</name>")[0]),
+			property("description", contents.split("<description>")[1].split("</description>")[0])
+		));
+	}
+	
 	public static App load(File file) throws Exception {
 		return load(properties(file.toFile()));
 	}
 	
 	public static App load(Properties properties) {
 		return new App().set(properties);
+	}
+	
+	public static void main(String[] arguments) throws Exception {
+		System.out.println(App.fromConfigXml(new File("/tmp/myapp/config.xml")));
 	}
 	
 	protected static String TEMPLATE = 	
