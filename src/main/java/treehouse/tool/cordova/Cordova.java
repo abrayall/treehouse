@@ -52,9 +52,9 @@ public class Cordova extends Tool {
 		return this.patch(directory);
 	}
 
-	public Process build(App app, File directory, String platform, Map<String, String> environment) throws Exception {
+	public Process build(App app, File directory, String platform, Map<String, String> options, Map<String, String> environment) throws Exception {
 		this.setup(app, directory);
-		return this.process(environment, directory, "build").start();
+		return this.process(environment, directory, "build", "--" + options.get("type", "release"), "--device").start();
 	}
 	
 	public Process run(App app, File directory) throws Exception {

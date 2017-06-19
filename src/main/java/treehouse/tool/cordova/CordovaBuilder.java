@@ -34,12 +34,15 @@ public abstract class CordovaBuilder implements Builder {
 		}
 		
 		public Job<File> build(App app, Map<String, String> options) throws Exception {
-			return new ProcessJob<File>(this.engine.cordova().build(app, directory, "android", map(
+			return new ProcessJob<File>(this.engine.cordova().build(app, directory, "android", options, map(
 				entry("ANDROID_HOME", this.engine.android().home().toString())
-			))).onTerminate(this::finish).onOutput(this::handle);
+			))).onTerminate(this::finish).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false"))));
 		}
 		
-		public void handle(String line, ProcessJob<File> job) {
+		public void handle(String line, ProcessJob<File> job, Boolean verbose) {
+			if (verbose)
+				System.out.println("  [cordova] " + line);
+			
 			if (line.contains("BUILD SUCCESSFUL"))
 				this.state = "success";
 			
