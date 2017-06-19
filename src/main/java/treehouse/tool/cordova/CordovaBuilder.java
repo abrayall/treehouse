@@ -66,6 +66,7 @@ public abstract class CordovaBuilder implements Builder {
 		}
 		
 		protected File generate(App app, File keystore) throws Exception {
+			System.out.println("Generating key to sign the app...");
 			String output = Streams.read(javax.lang.Runtime.process("keytool", 
 				"-genkey", 
 				"-alias", app.getName().toLowerCase(),
@@ -74,7 +75,7 @@ public abstract class CordovaBuilder implements Builder {
 				"-keypass", app.getName().toLowerCase(),
 				"-keyalg", "RSA",
 				"-keysize", "2048",
-				"-validity", "3650",
+				"-validity", "20000",
 				"-storepass", app.getName().toLowerCase(),
 				"-dname", "CN=" + app.getName().toLowerCase() + ", OU=, O=, L=, S=, C=US"
 			).redirectErrorStream(true).start().getInputStream());
