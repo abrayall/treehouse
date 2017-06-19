@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import javax.io.File;
 import javax.io.Streams;
 import javax.lang.Try;
+import javax.util.List;
 import javax.util.Map;
+import static javax.util.List.*;
 
 import treehouse.app.App;
 import treehouse.tool.Tool;
@@ -52,9 +54,9 @@ public class Cordova extends Tool {
 		return this.patch(directory);
 	}
 
-	public Process build(App app, File directory, String platform, Map<String, String> options, Map<String, String> environment) throws Exception {
+	public Process build(App app, File directory, String platform, Map<String, String> options, Map<String, String> environment, List<String> extra) throws Exception {
 		this.setup(app, directory);
-		return this.process(environment, directory, "build", "--" + options.get("type", "release"), "--device").start();
+		return this.process(environment, directory, parameters(list("build", "--" + options.get("type", "release"), "--device"), extra)).start();
 	}
 	
 	public Process run(App app, File directory) throws Exception {
@@ -66,6 +68,11 @@ public class Cordova extends Tool {
 		File run = new File(directory, "platforms/browser/cordova/run");
 		run.write(run.read().replace("args.target || \"chrome\"", "args.target || \"none\"").replace("return cordovaServe", "return args.target == \"none\" ? null : cordovaServe"));
 		return this;
+	}
+	
+	protected String[] parameters(List<String> base, List<String> extra) {
+		base.addAll(extra);
+		return base.toArray(new String[0]);
 	}
 	
 	protected void write(File file, String contents) throws Exception {

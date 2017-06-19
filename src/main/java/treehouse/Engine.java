@@ -34,7 +34,7 @@ public class Engine {
 	public Engine build(App app) throws Exception {
 		return this.build(app, map(
 			entry("type", "release"),
-			entry("verbose", "false")
+			entry("verbose", "true")
 		));
 	}
 	
