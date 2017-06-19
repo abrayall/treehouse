@@ -7,6 +7,8 @@ import javax.io.Streams;
 import javax.lang.Try;
 import javax.util.List;
 import javax.util.Map;
+
+import static javax.util.Map.*;
 import static javax.util.List.*;
 
 import treehouse.app.App;
@@ -56,11 +58,11 @@ public class Cordova extends Tool {
 
 	public Process build(App app, File directory, String platform, Map<String, String> options, Map<String, String> environment, List<String> extra) throws Exception {
 		this.setup(app, directory);
-		return this.process(environment, directory, parameters(list("build", "--" + options.get("type", "release"), "--device"), extra)).start();
+		return this.process(environment, directory, parameters(list("build", platform, "--" + options.get("type", "release"), "--device"), extra)).start();
 	}
 	
 	public Process run(App app, File directory) throws Exception {
-		this.setup(app, directory);
+		this.build(app, directory, "browser", map(), map(), list()).waitFor();
 		return javax.lang.Runtime.process(directory.toFile(), new File(directory, "/platforms/browser/cordova/run").toString(), "browser", "--target=none", "--port=8015").start();
 	}
 	

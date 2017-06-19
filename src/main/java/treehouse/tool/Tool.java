@@ -24,6 +24,10 @@ public abstract class Tool {
 		return validate(Streams.read(process(environment, directory, parameters).start().getInputStream()).trim());
 	}
 	
+	protected ProcessBuilder process(File directory, String... parameters) throws Exception {
+		return process(map(), directory, parameters);
+	}
+	
 	protected ProcessBuilder process(Map<String, String> environment, File directory, String... parameters) throws Exception {
 		return Runtime.process(environment, directory.toFile(), command(parameters)).redirectErrorStream(true);
 	}
