@@ -126,7 +126,11 @@ public class Engine {
 	}
 
 	public List<String> platforms() {
-		return list("ios");
+		List<String> platforms = list("android");
+		if (isMac())
+			platforms.add("ios");
+
+		return platforms;
 	}
 
 	public String store(String platform) {
