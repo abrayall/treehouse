@@ -55,7 +55,7 @@ public class Engine {
 		for (String platform : CordovaBuilder.platforms()) {
 			File output = new File("build/" + platform + "/").delete();
 			//TODO: only build if source is newer and output if it exists
-			println("Building " + app.getName() + " [id: " + app.getId() + "] [v" + app.getVersion() + "] for " + platform + "...");
+			println("Building " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] for " + platform + "...");
 			CordovaBuilder.builder(platform, this, this.work("cordova")).build(app, options).onComplete(file -> {
 				String artifact = (app.getName() + "." + file.name().split("\\.")[1]).replaceAll(" ", "-").toLowerCase();
 				attempt(() -> Files.copy(file.toPath(), new File(output, artifact).mkdirs().toPath(), StandardCopyOption.REPLACE_EXISTING));
@@ -73,9 +73,9 @@ public class Engine {
 	public Engine publish(App app, String track, Map<String, String> options) throws Exception {
 		this.build(app);
 		for (String platform : CordovaBuilder.platforms()) {
-			println("Publishing " + app.getName() + " [id: " + app.getId() + "] [v" + app.getVersion() + "] to " + (platform.equals("android") ? "Google Play store" : "Apple app store") + " [" + track + "]...");
+			println("Publishing " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] to " + store(platform) + " [" + track + "]...");
 			FastlanePublisher.publisher(platform, this).publish(app, new File("build/" + platform + "/" + app.getName().toLowerCase() + "." + (platform.equals("android") ? "apk" : "ipa")), track, options).onComplete(result -> {
-				println("Publish to " + platform + " complete");
+				println("Publish to " + store(platform) + " complete");
 			}).onError(exception -> this.error(exception, options));
 		}
 		
@@ -118,5 +118,9 @@ public class Engine {
 
 	public Chrome chrome() throws Exception {
 		return new Chrome();
+	}
+	
+	public String store(String platform) {
+		return platform.equals("android") ? "google" : "apple";
 	}
 }
