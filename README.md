@@ -8,8 +8,8 @@ Treehouse = Cordova + Fastlane
 
 ### Schedule
  - v0.1.0 - Support run command with Cordova (including continous / development mode) [Complete]
- - v0.2.0 - Support build command with Cordova for Android [Started]
- - v0.3.0 - Support publish command with Fastlane for Play store [Planned]
+ - v0.2.0 - Support build command with Cordova for Android [Complete]
+ - v0.3.0 - Support publish command with Fastlane for Play store [Complete]
  - v0.4.0 - Support build command with Corova for iOS [Planned]
  - v0.5.0 - Support publish command with Faslane for [Planned]
  - v0.6.0 - Support create command
