@@ -21,6 +21,10 @@ import treehouse.tool.cordova.CordovaRunner;
 import treehouse.tool.fastlane.Fastlane;
 import treehouse.tool.fastlane.FastlanePublisher;
 
+//TODO: Merge Cordova, CordovaBuilder and CordovaRunner
+//TODO: Merge Fastlane, FastlanePublisher
+//TODO: Remove Tool base class
+
 public class Engine {
 	
 	private File directory;

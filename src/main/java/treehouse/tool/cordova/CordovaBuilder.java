@@ -3,19 +3,18 @@ package treehouse.tool.cordova;
 import static javax.util.List.list;
 import static javax.util.Map.entry;
 import static javax.util.Map.map;
+import static javax.util.concurrent.Future.*;
 
 import javax.io.File;
 import javax.io.Streams;
 import javax.util.List;
 import javax.util.Map;
+import javax.util.concurrent.Future;
 
-import treehouse.Builder;
 import treehouse.Engine;
 import treehouse.app.App;
-import treehouse.job.Job;
-import treehouse.job.ProcessJob;
 
-public abstract class CordovaBuilder implements Builder {
+public abstract class CordovaBuilder {
 	
 	protected Engine engine;
 	protected File directory;
@@ -28,21 +27,23 @@ public abstract class CordovaBuilder implements Builder {
 		this.directory = directory;
 	}
 	
+	public abstract Future<File> build(App app, Map<String, String> options) throws Exception;
+	
 	public static class CordovaAndroidBuilder extends CordovaBuilder {
 
 		public CordovaAndroidBuilder(Engine engine, File directory) {
 			super(engine, directory);
 		}
 		
-		public Job<File> build(App app, Map<String, String> options) throws Exception {
+		public Future<File> build(App app, Map<String, String> options) throws Exception {
 			File certificate = certificate(app);
 			List<String> extra = list("--", "--keystore=" + certificate, "--storePassword=" + app.getName().toLowerCase(), "--password=" + app.getName().toLowerCase(), "--alias=" + app.getName().toLowerCase());
-			return new ProcessJob<File>(this.engine.cordova().build(app, directory, "android", options, map(
+			return future(this.engine.cordova().build(app, directory, "android", options, map(
 				entry("ANDROID_HOME", this.engine.android().home().toString())
-			), extra)).onTerminate(this::finish).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false"))));
+			), extra), File.class).onTerminate(this::finish).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false"))));
 		}
 		
-		public void handle(String line, ProcessJob<File> job, Boolean verbose) {
+		public void handle(String line, ProcessFuture<File> future, Boolean verbose) {
 			if (verbose)
 				System.out.println("  [cordova] " + line);
 			
@@ -53,11 +54,11 @@ public abstract class CordovaBuilder implements Builder {
 				this.artifact = new File(line.trim());
 		}
 		
-		public void finish(Integer code, ProcessJob<File> job) {
+		public void finish(Integer code, ProcessFuture<File> future) {
 			if ("success".equalsIgnoreCase(this.state) && this.artifact != null && this.artifact.exists())
-				job.complete(this.artifact);
+				future.complete(this.artifact);
 			else
-				job.completeExceptionally(new Exception("Error building"));
+				future.completeExceptionally(new Exception("Error building"));
 		}
 		
 		protected File certificate(App app) throws Exception {

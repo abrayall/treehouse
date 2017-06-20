@@ -1,25 +1,28 @@
 package treehouse.tool.fastlane;
 
-import static javax.util.List.*;
-import static javax.util.Map.*;
+import static javax.util.List.list;
+import static javax.util.Map.entry;
+import static javax.util.Map.map;
+import static javax.util.concurrent.Future.future;
 
 import javax.io.File;
 import javax.util.Map;
+import javax.util.concurrent.Future;
+import javax.util.concurrent.Future.*;
 
 import treehouse.Engine;
-import treehouse.Publisher;
 import treehouse.app.App;
-import treehouse.job.Job;
-import treehouse.job.ProcessJob;
 
-public abstract class FastlanePublisher implements Publisher {
+public abstract class FastlanePublisher {
 
-	public static Publisher publisher(String platform, Engine engine) {
+	public static FastlanePublisher publisher(String platform, Engine engine) {
 		if ("android".equals(platform))
 			return new FastlanePlayPublisher(engine);
 		
 		return null;
 	}
+	
+	public abstract Future<Boolean> publish(App app, File artifact, String track, Map<String, String> options) throws Exception;
 	
 	public static class FastlanePlayPublisher extends FastlanePublisher {
 		
@@ -32,21 +35,21 @@ public abstract class FastlanePublisher implements Publisher {
 			this.engine = engine;
 		}
 		
-		public Job<Boolean> publish(App app, File artifact, String track) throws Exception {
+		public Future<Boolean> publish(App app, File artifact, String track) throws Exception {
 			return this.publish(app, artifact, track, map(
 				entry("verbose", "true")
 			));
 		}
 		
-		public Job<Boolean> publish(App app, File artifact, String track, Map<String, String> options) throws Exception {
-			return new ProcessJob<Boolean>(this.engine.fastlane().supply(app, track, artifact, new File("resources/android/play.json"), list(
+		public Future<Boolean> publish(App app, File artifact, String track, Map<String, String> options) throws Exception {
+			return future(this.engine.fastlane().supply(app, track, artifact, new File("resources/android/play.json"), list(
 				"--skip_upload_images", 
 				"--skip_upload_screenshots", 
 				"--skip_upload_metadata"
-			))).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false")))).onTerminate(this::finish);
+			)), Boolean.class).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false")))).onTerminate(this::finish);
 		}
 		
-		public void handle(String line, ProcessJob<Boolean> job, Boolean verbose) {
+		public void handle(String line, ProcessFuture<Boolean> job, Boolean verbose) {
 			//if (verbose)
 			//	System.out.println("  [fastlane] " + line);
 			
@@ -59,7 +62,7 @@ public abstract class FastlanePublisher implements Publisher {
 			}
 		}
 		
-		public void finish(Integer code, ProcessJob<Boolean> job) {
+		public void finish(Integer code, ProcessFuture<Boolean> job) {
 			if (this.result)
 				job.complete(true);
 			else

@@ -66,17 +66,3 @@ public class Main {
 		return new String[0];
 	}
 }
-
-
-//File configuration = new File(current, "app.conf");
-
-//if (configuration.exists() == false)
-//	error("Not a treehouse project directory");
-
-//Project project = new Project(current);
-//if (arguments.length > 0 && "create".equals(list(arguments).get(0)))
-//	project.load();
-//else
-//	project.run();
-
-//App app = App.load(configuration);
