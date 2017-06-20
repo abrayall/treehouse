@@ -3,12 +3,11 @@ package treehouse.tool.fastlane;
 import static javax.util.List.list;
 import static javax.util.Map.entry;
 import static javax.util.Map.map;
-import static javax.util.concurrent.Future.future;
 
 import javax.io.File;
+import javax.lang.Process;
 import javax.util.Map;
 import javax.util.concurrent.Future;
-import javax.util.concurrent.Future.*;
 
 import treehouse.Engine;
 import treehouse.app.App;
@@ -42,14 +41,14 @@ public abstract class FastlanePublisher {
 		}
 		
 		public Future<Boolean> publish(App app, File artifact, String track, Map<String, String> options) throws Exception {
-			return future(this.engine.fastlane().supply(app, track, artifact, new File("resources/android/play.json"), list(
+			return new Process(this.engine.fastlane().supply(app, track, artifact, new File("resources/android/play.json"), list(
 				"--skip_upload_images", 
 				"--skip_upload_screenshots", 
 				"--skip_upload_metadata"
-			)), Boolean.class).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false")))).onTerminate(this::finish);
+			))).future(Boolean.class).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false")))).onTerminate(this::finish);
 		}
 		
-		public void handle(String line, ProcessFuture<Boolean> job, Boolean verbose) {
+		public void handle(String line, Future<Boolean> job, Boolean verbose) {
 			//if (verbose)
 			//	System.out.println("  [fastlane] " + line);
 			
@@ -62,7 +61,7 @@ public abstract class FastlanePublisher {
 			}
 		}
 		
-		public void finish(Integer code, ProcessFuture<Boolean> job) {
+		public void finish(Integer code, Future<Boolean> job) {
 			if (this.result)
 				job.complete(true);
 			else

@@ -1,5 +1,10 @@
 package treehouse.tool.cordova;
 
+import javax.lang.Process;
+import javax.lang.Runtime;
+import static javax.util.List.*;
+import static javax.util.Map.*;
+
 import java.io.FileOutputStream;
 
 import javax.io.File;
@@ -7,9 +12,6 @@ import javax.io.Streams;
 import javax.lang.Try;
 import javax.util.List;
 import javax.util.Map;
-
-import static javax.util.Map.*;
-import static javax.util.List.*;
 
 import treehouse.app.App;
 import treehouse.tool.Tool;
@@ -58,12 +60,12 @@ public class Cordova extends Tool {
 
 	public Process build(App app, File directory, String platform, Map<String, String> options, Map<String, String> environment, List<String> extra) throws Exception {
 		this.setup(app, directory);
-		return this.process(environment, directory, parameters(list("build", platform, "--" + options.get("type", "release"), "--device"), extra)).start();
+		return Runtime.execute(builder(environment, directory, parameters(list("build", platform, "--" + options.get("type", "release"), "--device"), extra)));
 	}
 	
 	public Process run(App app, File directory) throws Exception {
 		this.build(app, directory, "browser", map(), map(), list()).waitFor();
-		return javax.lang.Runtime.process(directory.toFile(), new File(directory, "/platforms/browser/cordova/run").toString(), "browser", "--target=none", "--port=8015").start();
+		return Runtime.execute(Process.builder(directory.toFile(), new File(directory, "/platforms/browser/cordova/run").toString(), "browser", "--target=none", "--port=8015"));
 	}
 	
 	protected Cordova patch(File directory) throws Exception {

@@ -3,10 +3,10 @@ package treehouse.tool.cordova;
 import static javax.util.List.list;
 import static javax.util.Map.entry;
 import static javax.util.Map.map;
-import static javax.util.concurrent.Future.*;
 
 import javax.io.File;
 import javax.io.Streams;
+import javax.lang.Process;
 import javax.util.List;
 import javax.util.Map;
 import javax.util.concurrent.Future;
@@ -38,12 +38,12 @@ public abstract class CordovaBuilder {
 		public Future<File> build(App app, Map<String, String> options) throws Exception {
 			File certificate = certificate(app);
 			List<String> extra = list("--", "--keystore=" + certificate, "--storePassword=" + app.getName().toLowerCase(), "--password=" + app.getName().toLowerCase(), "--alias=" + app.getName().toLowerCase());
-			return future(this.engine.cordova().build(app, directory, "android", options, map(
+			return new Process(this.engine.cordova().build(app, directory, "android", options, map(
 				entry("ANDROID_HOME", this.engine.android().home().toString())
-			), extra), File.class).onTerminate(this::finish).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false"))));
+			), extra)).future(File.class).onTerminate(this::finish).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false"))));
 		}
 		
-		public void handle(String line, ProcessFuture<File> future, Boolean verbose) {
+		public void handle(String line, Future<File> future, Boolean verbose) {
 			if (verbose)
 				System.out.println("  [cordova] " + line);
 			
@@ -54,7 +54,7 @@ public abstract class CordovaBuilder {
 				this.artifact = new File(line.trim());
 		}
 		
-		public void finish(Integer code, ProcessFuture<File> future) {
+		public void finish(Integer code, Future<File> future) {
 			if ("success".equalsIgnoreCase(this.state) && this.artifact != null && this.artifact.exists())
 				future.complete(this.artifact);
 			else
@@ -68,7 +68,7 @@ public abstract class CordovaBuilder {
 		
 		protected File generate(App app, File keystore) throws Exception {
 			System.out.println("Generating key to sign the app...");
-			String output = Streams.read(javax.lang.Runtime.process("keytool", 
+			String output = Streams.read(Process.builder("keytool", 
 				"-genkey", 
 				"-alias", app.getName().toLowerCase(),
 				"-keystore", keystore.mkdirs().toString(),
