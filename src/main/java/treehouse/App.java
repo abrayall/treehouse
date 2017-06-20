@@ -1,4 +1,4 @@
-package treehouse.app;
+package treehouse;
 
 import static javax.util.Properties.properties;
 import static javax.util.Properties.property;

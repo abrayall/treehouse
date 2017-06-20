@@ -6,8 +6,8 @@ import static javax.net.Urls.url;
 import javax.io.File;
 import javax.io.File.FileWatcher;
 
+import treehouse.App;
 import treehouse.Engine;
-import treehouse.app.App;
 import treehouse.tool.chrome.Chrome;
 
 public class CordovaRunner {

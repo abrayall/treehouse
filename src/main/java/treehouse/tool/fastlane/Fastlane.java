@@ -6,7 +6,7 @@ import javax.io.File;
 import javax.lang.Try;
 import javax.util.List;
 
-import treehouse.app.App;
+import treehouse.App;
 import treehouse.tool.Tool;
 
 public class Fastlane extends Tool {

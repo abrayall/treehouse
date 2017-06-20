@@ -9,8 +9,8 @@ import javax.lang.Process;
 import javax.util.Map;
 import javax.util.concurrent.Future;
 
+import treehouse.App;
 import treehouse.Engine;
-import treehouse.app.App;
 
 public abstract class FastlanePublisher {
 

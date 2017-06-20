@@ -13,7 +13,7 @@ import javax.lang.Try;
 import javax.util.List;
 import javax.util.Map;
 
-import treehouse.app.App;
+import treehouse.App;
 import treehouse.tool.Tool;
 
 public class Cordova extends Tool {

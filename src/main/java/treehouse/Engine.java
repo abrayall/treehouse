@@ -12,7 +12,6 @@ import java.nio.file.StandardCopyOption;
 import javax.io.File;
 import javax.util.Map;
 
-import treehouse.app.App;
 import treehouse.sdk.android.Android;
 import treehouse.tool.chrome.Chrome;
 import treehouse.tool.cordova.Cordova;
