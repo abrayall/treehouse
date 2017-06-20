@@ -1,16 +1,17 @@
 package treehouse;
 
 
-import static javax.lang.System.println;
-import static javax.lang.Try.attempt;
-import static javax.util.Map.entry;
-import static javax.util.Map.map;
+import static javax.lang.System.*;
+import static javax.lang.Try.*;
+import static javax.util.Map.*;
+import static javax.util.List.*;
 
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 import javax.io.File;
 import javax.util.Map;
+import javax.util.List;
 
 import treehouse.app.App;
 import treehouse.sdk.android.Android;
@@ -26,12 +27,12 @@ import treehouse.tool.fastlane.FastlanePublisher;
 //TODO: Remove Tool base class
 
 public class Engine {
-	
+
 	private File directory;
 	private Cordova cordova;
 	private Fastlane fastlane;
 	private Android android;
-	
+
 	public Engine(File directory) {
 		this.directory = directory;
 		this.cordova = new Cordova();
@@ -42,7 +43,7 @@ public class Engine {
 	public Engine run(App app) throws Exception {
 		return this.run(app, false);
 	}
-	
+
 	public Engine run(App app, boolean continous) throws Exception {
 		println("Running app " + " [id: " + app.getId() + "] [version: " + app.getVersion() + "]" + (continous == true ? " [continous mode]" : "") + "...");
 		return new CordovaRunner(this, app, this.work("cordova")).start(continous);
@@ -54,9 +55,9 @@ public class Engine {
 			entry("verbose", "false")
 		));
 	}
-	
+
 	public Engine build(App app, Map<String, String> options) throws Exception {
-		for (String platform : CordovaBuilder.platforms()) {
+		for (String platform : this.platforms()) {
 			File output = new File("build/" + platform + "/").delete();
 			//TODO: only build if source is newer and output if it exists
 			println("Building " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] for " + platform + "...");
@@ -66,32 +67,32 @@ public class Engine {
 				println("Build for " + platform + " complete [" + new File(output, artifact) + "]");
 			}).onError(exception -> this.error(exception, options));
 		}
-		
+
 		return this;
 	}
-	
+
 	public Engine publish(App app, String track) throws Exception {
 		return this.publish(app, track, map());
 	}
-	
+
 	public Engine publish(App app, String track, Map<String, String> options) throws Exception {
 		this.build(app);
-		for (String platform : CordovaBuilder.platforms()) {
+		for (String platform : this.platforms()) {
 			println("Publishing " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] to " + store(platform) + " [" + track + "]...");
 			FastlanePublisher.publisher(platform, this).publish(app, new File("build/" + platform + "/" + app.getName().toLowerCase() + "." + (platform.equals("android") ? "apk" : "ipa")), track, options).onComplete(result -> {
 				println("Publish to " + store(platform) + " complete");
 			}).onError(exception -> this.error(exception, options));
 		}
-		
+
 		return this;
 	}
-	
+
 	public void error(Throwable error, Map<String, String> options) {
 		println();
 		println("[Error]: " + error.getMessage());
 		System.exit(-1);
 	}
-	
+
 	public File source() {
 		return new File(this.directory, "www");
 	}
@@ -99,15 +100,15 @@ public class Engine {
 	public File resources() {
 		return new File(this.directory, "resources");
 	}
-	
+
 	public File work() {
 		return new File("."); //new File(this.directory, "work");
 	}
-	
+
 	public File work(String name) {
 		return this.work(); //new File(this.work(), name);
 	}
-	
+
 	public Cordova cordova() throws Exception {
 		return this.cordova;
 	}
@@ -115,7 +116,7 @@ public class Engine {
 	public Android android() throws Exception {
 		return this.android;
 	}
-	
+
 	public Fastlane fastlane() throws Exception {
 		return this.fastlane;
 	}
@@ -123,7 +124,11 @@ public class Engine {
 	public Chrome chrome() throws Exception {
 		return new Chrome();
 	}
-	
+
+	public List<String> platforms() {
+		return list("ios");
+	}
+
 	public String store(String platform) {
 		return platform.equals("android") ? "google" : "apple";
 	}
