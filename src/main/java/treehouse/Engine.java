@@ -49,10 +49,7 @@ public class Engine {
 	}
 
 	public Engine build(App app) throws Exception {
-		return this.build(app, map(
-			entry("type", "release"),
-			entry("verbose", "false")
-		));
+		return this.build(app, map());
 	}
 
 	public Engine build(App app, Map<String, String> options) throws Exception {
@@ -128,7 +125,7 @@ public class Engine {
 		List<String> platforms = list();
 		if (this.android.installed())
 			platforms.add("android");
-			
+
 		if (isMac())
 			platforms.add("ios");
 
