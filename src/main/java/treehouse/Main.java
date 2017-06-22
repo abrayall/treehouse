@@ -8,6 +8,7 @@ import java.util.Arrays;
 import javax.io.File;
 import javax.util.Map;
 import javax.util.List;
+import javax.lang.Strings;
 
 import treehouse.version.Version;
 
@@ -30,8 +31,8 @@ public class Main {
 			engine.run(app);
 		else if (matches(parameters, "run", "continous") || matches(parameters, "develop") || matches(parameters, "dev"))
 			engine.run(app, true);
-		else if (matches(parameters, "build"))
-			engine.build(app, options);
+		else if (matches(parameters, "build", ".*"))
+			engine.build(app, parameters.get(1, "*"), options);
 		else if (matches(parameters, "publish"))
 			engine.publish(app, "production", options);
 		else if (matches(parameters, "list"))
@@ -96,11 +97,12 @@ public class Main {
 	}
 
 	protected static boolean matches(List<String> parameters, String... values) {
-		if (parameters.size() != values.length)
+		if (parameters.size() > values.length)
 			return false;
 
 		for (int i = 0; i < values.length; i++) {
-			if (parameters.get(i).equals(values[i]) == false && parameters.get(i).matches(values[i]) == false)
+			String parameter = parameters.get(i, "");
+			if (parameter.equals(values[i]) == false && parameter.matches(values[i]) == false)
 				return false;
 		}
 
