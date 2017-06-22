@@ -17,50 +17,50 @@ public abstract class FastlanePublisher {
 	public static FastlanePublisher publisher(String platform, Engine engine) {
 		if ("android".equals(platform))
 			return new FastlanePlayPublisher(engine);
-		
+
 		return null;
 	}
-	
+
 	public abstract Future<Boolean> publish(App app, File artifact, String track, Map<String, String> options) throws Exception;
-	
+
 	public static class FastlanePlayPublisher extends FastlanePublisher {
-		
+
 		protected Engine engine;
-		
+
 		protected boolean result = false;
 		protected String reason = "";
-		
+
 		public FastlanePlayPublisher(Engine engine) {
 			this.engine = engine;
 		}
-		
+
 		public Future<Boolean> publish(App app, File artifact, String track) throws Exception {
 			return this.publish(app, artifact, track, map(
 				entry("verbose", "true")
 			));
 		}
-		
+
 		public Future<Boolean> publish(App app, File artifact, String track, Map<String, String> options) throws Exception {
-			return new Process(this.engine.fastlane().supply(app, track, artifact, new File("resources/android/play.json"), list(
-				"--skip_upload_images", 
-				"--skip_upload_screenshots", 
+			return new Process(this.engine.fastlane().supply(app, track, artifact, new File(options.get("key", "resources/android/play.json")), list(
+				"--skip_upload_images",
+				"--skip_upload_screenshots",
 				"--skip_upload_metadata"
 			))).future(Boolean.class).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false")))).onTerminate(this::finish);
 		}
-		
+
 		public void handle(String line, Future<Boolean> job, Boolean verbose) {
 			//if (verbose)
 			//	System.out.println("  [fastlane] " + line);
-			
+
 			if (line.contains("Successfully finished the upload to Google Play"))
 				this.result = true;
-			
+
 			if (line.contains("Google Api Error")) {
 				this.result = false;
 				this.reason = line.split(":")[2];
 			}
 		}
-		
+
 		public void finish(Integer code, Future<Boolean> job) {
 			if (this.result)
 				job.complete(true);
