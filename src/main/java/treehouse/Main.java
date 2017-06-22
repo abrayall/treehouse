@@ -34,6 +34,8 @@ public class Main {
 			engine.build(app, options);
 		else if (matches(parameters, "publish"))
 			engine.publish(app, "production", options);
+		else if (matches(parameters, "list"))
+			platforms(engine);
 		else
 			help();
 	}
@@ -43,9 +45,19 @@ public class Main {
 		println("Usage:");
 		println("treehouse [command]");
 		println("  commands: ");
+		println("    - list:    lists the supported platforms");
 		println("    - run:     runs the app in browser");
 		println("    - develop: runs the app in browser and reloads on code changes");
 		println("    - build:   builds the app for all supported platforms");
+		println();
+	}
+
+	public static void platforms(Engine engine) throws Exception {
+		println();
+		println("Supported platforms:");
+		for (String platform : engine.platforms())
+			println("  - " + platform + " " + (platform.equals("android") ? "[" + engine.android().home() + "]" : ""));
+
 		println();
 	}
 
