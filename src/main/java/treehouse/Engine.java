@@ -125,7 +125,10 @@ public class Engine {
 	}
 
 	public List<String> platforms() {
-		List<String> platforms = list("android");
+		List<String> platforms = list();
+		if (this.android.installed())
+			platforms.add("android");
+			
 		if (isMac())
 			platforms.add("ios");
 

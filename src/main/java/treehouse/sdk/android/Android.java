@@ -7,29 +7,33 @@ import javax.lang.Try;
 import static javax.lang.Try.*;
 
 public class Android {
-	
+
 	protected File home;
-			
+
 	public Android() {
 		this(Try.attempt(() -> locate()));
 	}
-	
+
 	public Android(File home) {
 		this.home = home;
 	}
-		
+
 	public File home() {
 		return this.home;
 	}
-	
+
+	public boolean installed() {
+		return this.home != null && this.home.exists();
+	}
+
 	//TODO: setup sdk
 	//TODO: install
 
-	
+
 	public static File locate() throws Exception {
 		return locate(new File("/opt"));
 	}
-	
+
 	public static File locate(File directory) throws Exception {
 		//TODO: need to optimize so we stop searching filesystem once we find it
 		return directory.search(".*android").filter(file -> {
