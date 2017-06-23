@@ -11,6 +11,7 @@
 			<srcfiles dir="." includes="build.xml" />
 		    <srcfiles dir= "${source.dir}" includes="**/*.java" />
 			<srcfiles dir= "${resource.dir}" includes="**/*" />
+			<srcfiles dir= "${library.dir}" includes="**/*" />
 		</uptodate>
 	</condition>
 		
