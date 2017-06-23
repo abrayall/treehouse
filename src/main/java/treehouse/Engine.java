@@ -12,7 +12,6 @@ import java.nio.file.StandardCopyOption;
 import javax.io.File;
 import javax.util.Map;
 import javax.util.List;
-import java.util.stream.Stream;
 
 import treehouse.sdk.android.Android;
 import treehouse.tool.chrome.Chrome;
@@ -64,17 +63,21 @@ public class Engine {
 
 		return this.build(app, platforms, options);
 	}
-
+	
 	protected Engine build(App app, List<String> platforms, Map<String, String> options) throws Exception {
 		for (String platform : platforms) {
-			File output = new File("build/" + platform + "/").delete();
-			//TODO: only build if source is newer and output if it exists
-			println("Building " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] for " + platform + "...");
-			CordovaBuilder.builder(platform, this, this.work("cordova")).build(app, options).onComplete(file -> {
-				String artifact = (app.getName() + "." + file.name().split("\\.")[1]).replaceAll(" ", "-").toLowerCase();
-				attempt(() -> Files.copy(file.toPath(), new File(output, artifact).mkdirs().toPath(), StandardCopyOption.REPLACE_EXISTING));
-				println("Build for " + platform + " complete [" + new File(output, artifact) + "]\n");
-			}).onError(exception -> this.error(exception, options));
+			File output = new File("build/" + platform + "/");
+			if (output.latest() > this.source().latest())
+				println("Build of " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] for " + platform + " is up to date.\n");
+			else {
+				output.delete();
+				println("Building " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] for " + platform + "...");
+				CordovaBuilder.builder(platform, this, this.work("cordova")).build(app, options).onComplete(file -> {
+					String artifact = (app.getName() + "." + file.name().split("\\.")[1]).replaceAll(" ", "-").toLowerCase();
+					attempt(() -> Files.copy(file.toPath(), new File(output, artifact).mkdirs().toPath(), StandardCopyOption.REPLACE_EXISTING));
+					println("Build for " + platform + " complete [" + new File(output, artifact) + "]\n");
+				}).onError(exception -> this.error(exception, options));
+			}
 		}
 
 		return this;

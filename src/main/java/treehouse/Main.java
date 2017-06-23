@@ -4,11 +4,9 @@ import static javax.lang.System.println;
 import static javax.util.Map.*;
 import static javax.util.List.*;
 
-import java.util.Arrays;
 import javax.io.File;
 import javax.util.Map;
 import javax.util.List;
-import javax.lang.Strings;
 
 import treehouse.version.Version;
 

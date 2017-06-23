@@ -16,7 +16,7 @@ public abstract class FastlanePublisher {
 	protected Engine engine;
 
 	protected boolean result = false;
-	protected String reason = "";
+	protected String reason = "Unknown error";
 
 	public FastlanePublisher(Engine engine) {
 		this.engine = engine;
@@ -46,11 +46,6 @@ public abstract class FastlanePublisher {
 
 	public static class FastlanePlayPublisher extends FastlanePublisher {
 
-		protected Engine engine;
-
-		protected boolean result = false;
-		protected String reason = "Unknown error";
-
 		public FastlanePlayPublisher(Engine engine) {
 			super(engine);
 		}
@@ -64,8 +59,8 @@ public abstract class FastlanePublisher {
 		}
 
 		public void handle(String line, Future<Boolean> job, Boolean verbose) {
-			//if (verbose)
-			//	System.out.println("  [fastlane] " + line);
+			if (verbose)
+				System.out.println("  [fastlane] " + line);
 
 			if (line.contains("Successfully finished the upload"))
 				this.result = true;
