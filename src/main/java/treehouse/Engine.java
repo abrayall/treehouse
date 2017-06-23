@@ -54,7 +54,7 @@ public class Engine {
 	}
 
 	public Engine build(App app, String platform, Map<String, String> options) throws Exception {
-		List<String> platforms = list(this.platforms().stream().filter(string -> string.equals(platform) || platform.equals("*")).toArray(String[]::new));
+		List<String> platforms = this.platforms(platform);
 		if (platforms.size() == 0)
 			error("No supported platform to build " + (platform.equals("*") ? "" : "[" + platform +"]"));
 
@@ -143,6 +143,10 @@ public class Engine {
 			platforms.add("ios");
 
 		return platforms;
+	}
+
+	public List<String> platforms(String filter) {
+		return list(this.platforms().stream().filter(string -> string.equals(filter) || filter.equals("*")).toArray(String[]::new));
 	}
 
 	public String store(String platform) {

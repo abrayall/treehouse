@@ -41,13 +41,16 @@ public class CordovaRunner {
 
 		Thread.sleep(2000);
 		this.chrome = this.engine.chrome().launch(url("http://localhost:8015/index.html"), Chrome.DEV_TOOLS_ENABLED).closed(time -> {
-			this.stop();
+			if (continous)
+				attempt(() -> this.reload());
+			else
+				attempt(() -> this.stop());
 		});
 
 		println("  - Started chrome browser");
 
 		if (continous) {
-			println("  - Watching source files for changes...");
+			println("  - Watching for changes...");
 			this.watcher = this.engine.source().watcher((file, operation) -> {
 				attempt(() -> this.reload());
 			}).watch();
@@ -70,7 +73,7 @@ public class CordovaRunner {
 	}
 
 	public void reload() throws Exception {
-		println("  - Reloading because source files changed...");
+		println("  - Reloading...");
 		this.stop();
 		this.sync();
 		this.start();
