@@ -39,8 +39,8 @@ public class Main {
 			engine.run(app, true, options);
 		else if (matches(parameters, "build", ".*"))
 			engine.build(app, parameters.get(1, "*"), options);
-		else if (matches(parameters, "publish"))
-			engine.publish(app, "production", options);
+		else if (matches(parameters, "publish", ".*"))
+			engine.publish(app, parameters.get(1, "*"), options.get("track", "production"), options);
 		else if (matches(parameters, "list"))
 			platforms(engine);
 		else

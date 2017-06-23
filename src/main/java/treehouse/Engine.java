@@ -80,13 +80,21 @@ public class Engine {
 		return this;
 	}
 
-	public Engine publish(App app, String track) throws Exception {
-		return this.publish(app, track, map());
+	public Engine publish(App app, String platform, String track) throws Exception {
+		return this.publish(app, platform, track, map());
 	}
 
-	public Engine publish(App app, String track, Map<String, String> options) throws Exception {
-		this.build(app);
-		for (String platform : this.platforms()) {
+	public Engine publish(App app, String platform, String track, Map<String, String> options) throws Exception {
+		List<String> platforms = this.platforms(platform);
+		if (platforms.size() == 0)
+			error("No supported platform " + (platform.equals("*") ? "" : "[" + platform +"]"));
+
+		return this.publish(app, platforms, track, options);
+	}
+
+	protected Engine publish(App app, List<String> platforms, String track, Map<String, String> options) throws Exception {
+		for (String platform : platforms) {
+			this.build(app, platform, options);
 			println("Publishing " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] to " + store(platform) + " [" + track + "]...");
 			FastlanePublisher.publisher(platform, this).publish(app, new File("build/" + platform + "/" + app.getName().toLowerCase() + "." + (platform.equals("android") ? "apk" : "ipa")), track, options).onComplete(result -> {
 				println("Publish to " + store(platform) + " complete\n");
