@@ -21,6 +21,11 @@ public class Main {
 		List<String> parameters = parameters(arguments);
 		Map<String, String> options = options(arguments);
 
+		if (options.get("verbose", "false").equals("true")) {
+			println("  [parameters]: " + parameters.toString().replace("[", "").replace("]", ""));
+			println("     [options]: " + options.toString().replace("{", "").replace("}", "") + "\n");
+		}
+
 		File config = new File("config.xml");
 		if (config.exists() == false)
 			error("Not a valid mobile app project directory");
@@ -29,7 +34,7 @@ public class Main {
 		Engine engine = new Engine(new File("."));
 		if (matches(parameters, empty()) || matches(parameters, "run"))
 			engine.run(app);
-		else if (matches(parameters, "run", "continous") || matches(parameters, "develop") || matches(parameters, "dev"))
+		else if (matches(parameters, "run", "continous", ".*") || matches(parameters, "dev.*", ".*"))
 			engine.run(app, true);
 		else if (matches(parameters, "build", ".*"))
 			engine.build(app, parameters.get(1, "*"), options);
