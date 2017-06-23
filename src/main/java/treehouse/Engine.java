@@ -41,12 +41,16 @@ public class Engine {
 	}
 
 	public Engine run(App app) throws Exception {
-		return this.run(app, false);
+		return this.run(app, map());
 	}
 
-	public Engine run(App app, boolean continous) throws Exception {
+	public Engine run(App app, Map<String, String> options) throws Exception {
+		return this.run(app, false, options);
+	}
+
+	public Engine run(App app, boolean continous, Map<String, String> options) throws Exception {
 		println("Running app " + " [id: " + app.getId() + "] [version: " + app.getVersion() + "]" + (continous == true ? " [continous mode]" : "") + "...");
-		return new CordovaRunner(this, app, this.work("cordova")).start(continous);
+		return new CordovaRunner(this, app, this.work("cordova")).start(continous, options);
 	}
 
 	public Engine build(App app) throws Exception {

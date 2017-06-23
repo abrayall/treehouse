@@ -22,6 +22,7 @@ public class Main {
 		Map<String, String> options = options(arguments);
 
 		if (options.get("verbose", "false").equals("true")) {
+			println();
 			println("  [parameters]: " + parameters.toString().replace("[", "").replace("]", ""));
 			println("     [options]: " + options.toString().replace("{", "").replace("}", "") + "\n");
 		}
@@ -33,9 +34,9 @@ public class Main {
 		App app = App.fromConfigXml(config);
 		Engine engine = new Engine(new File("."));
 		if (matches(parameters, empty()) || matches(parameters, "run"))
-			engine.run(app);
+			engine.run(app, options);
 		else if (matches(parameters, "run", "continous", ".*") || matches(parameters, "dev.*", ".*"))
-			engine.run(app, true);
+			engine.run(app, true, options);
 		else if (matches(parameters, "build", ".*"))
 			engine.build(app, parameters.get(1, "*"), options);
 		else if (matches(parameters, "publish"))
