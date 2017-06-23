@@ -16,10 +16,11 @@ Treehouse = Cordova + Fastlane
  - [ ] v0.7.0 - Support setup command
  
 ### Commands
+- treehouse list
 - treehouse run [--verbose=true]
 - treehouse develop [--watch=source|browser|both default=both] [--verbose=true]
 - treehouse build [platform=ios|android|* default=*] [--verbose=true]
-- treehouse publish [platform=ios|android|* default=*] [--key=`location` default=resources/android/play.json] [--username=`username`] [--password=`password`]
+- treehouse publish [platform=ios|android|* default=*] [--key=`location` default=resources/android/play.json] [--username=`username`] [--password=`password`] [--verbose=true]
 
 ##### Coming Soon...
 - treehouse setup [platform]
