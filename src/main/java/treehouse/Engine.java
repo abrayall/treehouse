@@ -3,16 +3,17 @@ package treehouse;
 
 import static javax.lang.System.*;
 import static javax.lang.Try.*;
-import static javax.util.Map.*;
 import static javax.util.List.*;
+import static javax.util.Map.*;
 
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 import javax.io.File;
-import javax.util.Map;
 import javax.util.List;
+import javax.util.Map;
 
+import cilantro.io.Console;
 import treehouse.sdk.android.Android;
 import treehouse.tool.chrome.Chrome;
 import treehouse.tool.cordova.Cordova;
@@ -28,17 +29,45 @@ import treehouse.tool.fastlane.FastlanePublisher;
 public class Engine {
 
 	private File directory;
+	private Console console;
+	
 	private Cordova cordova;
 	private Fastlane fastlane;
 	private Android android;
 
-	public Engine(File directory) {
+	public Engine(File directory, Console console) {
 		this.directory = directory;
+		this.console = console;
 		this.cordova = new Cordova();
 		this.android = new Android();
 		this.fastlane = new Fastlane();
 	}
 
+	public Engine clean(App app) throws Exception {
+		return this.clean(app, "*");
+	}
+	
+	public Engine clean(App app, String platform) throws Exception {
+		return this.build(app, platform, map());
+	}
+	
+	public Engine clean(App app, String platform, Map<String, String> options) throws Exception {
+		return this.clean(app, this.platforms(platform), options);
+	}
+	
+	protected Engine clean(App app, List<String> platforms, Map<String, String> options) throws Exception {
+		for (String platform : platforms) {
+			File output = new File("build/" + platform + "/");
+			if (output.exists()) {
+				println("Cleaning " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] for " + platform + "...");
+				output.delete();
+			}
+		}
+		
+		println("Clean complete.\n");
+		return this;
+	}
+	
 	public Engine run(App app) throws Exception {
 		return this.run(app, map());
 	}
@@ -48,7 +77,7 @@ public class Engine {
 	}
 
 	public Engine run(App app, boolean continous, Map<String, String> options) throws Exception {
-		println("Running app " + " [id: " + app.getId() + "] [version: " + app.getVersion() + "]" + (continous == true ? " [continous mode]" : "") + "...");
+		println("Running " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "]" + (continous == true ? " [continous mode]" : "") + "...");
 		return new CordovaRunner(this, app, this.work("cordova")).start(continous, options);
 	}
 
@@ -108,8 +137,8 @@ public class Engine {
 	}
 
 	public void error(String message) {
-		println();
-		println("[Error]: " + message + "\n");
+		console.println();
+		console.printlnf("${format([Error]:, red, bold)} " + message + "\n");
 		System.exit(-1);
 	}
 

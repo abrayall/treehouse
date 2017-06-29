@@ -23,9 +23,11 @@ public class Main extends cilantro.Main {
 			error("Not a valid mobile app project directory");
 		
 		App app = App.fromConfigXml(config);
-		Engine engine = new Engine(new File("."));
+		Engine engine = new Engine(new File("."), console);
 		if (matches(parameters, empty()) || matches(parameters, "run"))
 			engine.run(app, options);
+		else if (matches(parameters, "clean", ".*"))
+			engine.clean(app, parameters.get(1, "*"), options);
 		else if (matches(parameters, "run", "continous", ".*") || matches(parameters, "dev.*", ".*"))
 			engine.run(app, true, options);
 		else if (matches(parameters, "build", ".*"))
@@ -46,6 +48,7 @@ public class Main extends cilantro.Main {
 		println("treehouse [command]");
 		println("  commands: ");
 		println("    - list:    lists the supported platforms");
+		println("    - clean:   cleans the build work area");
 		println("    - run:     runs the app in browser");
 		println("    - develop: runs the app in browser and reloads on code changes");
 		println("    - build:   builds the app for all supported platforms");
