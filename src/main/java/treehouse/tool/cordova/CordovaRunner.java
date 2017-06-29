@@ -5,6 +5,7 @@ import static javax.lang.Try.*;
 import static javax.util.Map.*;
 import static javax.net.Urls.*;
 
+import javax.lang.Process;
 import javax.io.File;
 import javax.io.File.FileWatcher;
 import javax.util.Map;
@@ -60,6 +61,12 @@ public class CordovaRunner {
 	protected Engine start(boolean watchSource, boolean watchBrowser, Map<String, String> options) throws Exception {
 		this.cordova = this.engine.cordova().run(this.app, this.directory);
 		println("  - Started cordova server");
+		
+		//this.cordova.future().onOutput((line, process) -> {
+		//	if (options.get("verbose", "false").equals("true"))
+		//		println("    [cordova]: " + line);
+		//});
+		
 
 		Thread.sleep(2000);
 		this.chrome = this.engine.chrome().launch(url("http://localhost:8015/index.html"), Chrome.DEV_TOOLS_ENABLED).closed(time -> {

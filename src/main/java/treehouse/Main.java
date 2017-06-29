@@ -1,23 +1,16 @@
 package treehouse;
 
-import static javax.lang.System.println;
-import static javax.util.Map.*;
-import static javax.util.List.*;
-
 import javax.io.File;
-import javax.util.Map;
 import javax.util.List;
+import javax.util.Map;
 
 import treehouse.version.Version;
 
-public class Main {
-	public static void main(String[] arguments) throws Exception {
+public class Main extends cilantro.Main {
+	public Integer execute(List<String> parameters, Map<String, String> options) throws Exception {
 		println("---------------------------------------");
-		println("Treehouse - Mobile App Toolchain v" + Version.getVersion());
+		println("${format(Treehouse - Mobile App Toolchain, blue, bold)} ${format(v" + Version.getVersion() + ", yellow)}");
 		println("---------------------------------------");
-
-		List<String> parameters = parameters(arguments);
-		Map<String, String> options = options(arguments);
 
 		if (options.get("verbose", "false").equals("true")) {
 			println();
@@ -28,7 +21,7 @@ public class Main {
 		File config = new File("config.xml");
 		if (config.exists() == false)
 			error("Not a valid mobile app project directory");
-
+		
 		App app = App.fromConfigXml(config);
 		Engine engine = new Engine(new File("."));
 		if (matches(parameters, empty()) || matches(parameters, "run"))
@@ -43,9 +36,11 @@ public class Main {
 			platforms(engine);
 		else
 			help();
+		
+		return 1;
 	}
 
-	public static void help() {
+	public void help() {
 		println();
 		println("Usage:");
 		println("treehouse [command]");
@@ -57,7 +52,7 @@ public class Main {
 		println();
 	}
 
-	public static void platforms(Engine engine) throws Exception {
+	public void platforms(Engine engine) throws Exception {
 		println();
 		println("Supported platforms:");
 		for (String platform : engine.platforms())
@@ -66,41 +61,21 @@ public class Main {
 		println();
 	}
 
-	public static void error(String message) {
+	public void error(String message) {
 		exit("Error: " + message, -1);
 	}
 
-	public static void exit(String message) {
+	public void exit(String message) {
 		exit(message, 1);
 	}
 
-	public static void exit(String message, int code) {
+	public void exit(String message, int code) {
 		println(message);
 		println();
 		System.exit(code);
 	}
 
-	protected static List<String> parameters(String[] arguments) {
-		List<String> parameters = list();
-		for (String argument : arguments) {
-			if (argument.startsWith("-") == false)
-				parameters.add(argument);
-		}
-
-		return parameters;
-	}
-
-	protected static Map<String, String> options(String[] arguments) {
-		Map<String, String> options = map();
-		for (String argument : arguments) {
-			if (argument.startsWith("-") && argument.contains("="))
-				options.put(argument.split("=")[0].replaceAll("-", ""), argument.split("=")[1]);
-		}
-
-		return options;
-	}
-
-	protected static boolean matches(List<String> parameters, String... values) {
+	protected boolean matches(List<String> parameters, String... values) {
 		if (parameters.size() > values.length)
 			return false;
 
@@ -113,7 +88,11 @@ public class Main {
 		return true;
 	}
 
-	protected static String[] empty() {
+	protected String[] empty() {
 		return new String[0];
+	}
+	
+	public static void main(String[] arguments) throws Exception {
+		new Main().initialize(arguments).execute();
 	}
 }
