@@ -17,7 +17,7 @@ public class Main extends cilantro.Main {
 			println("  [parameters]: " + parameters.toString().replace("[", "").replace("]", ""));
 			println("     [options]: " + options.toString().replace("{", "").replace("}", "") + "\n");
 		}
-
+		
 		File config = new File("config.xml");
 		if (config.exists() == false)
 			error("Not a valid mobile app project directory");
@@ -62,7 +62,7 @@ public class Main extends cilantro.Main {
 	}
 
 	public void error(String message) {
-		exit("Error: " + message, -1);
+		exit("${format([Error]:, red, bold)} " + message, -1);
 	}
 
 	public void exit(String message) {
@@ -70,6 +70,7 @@ public class Main extends cilantro.Main {
 	}
 
 	public void exit(String message, int code) {
+		println();
 		println(message);
 		println();
 		System.exit(code);
