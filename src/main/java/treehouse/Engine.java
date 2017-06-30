@@ -104,7 +104,7 @@ public class Engine {
 				CordovaBuilder.builder(platform, this, this.work("cordova")).build(app, options).onComplete(file -> {
 					String artifact = (app.getName() + "." + file.name().split("\\.")[1]).replaceAll(" ", "-").toLowerCase();
 					attempt(() -> Files.copy(file.toPath(), new File(output, artifact).mkdirs().toPath(), StandardCopyOption.REPLACE_EXISTING));
-					println("Build for " + platform + " complete [" + new File(output, artifact) + "]\n");
+					println("Build for " + platform + " complete [" + new File(output, artifact) + "].\n");
 				}).onError(exception -> this.error(exception, options));
 			}
 		}
@@ -119,7 +119,7 @@ public class Engine {
 	public Engine publish(App app, String platform, String track, Map<String, String> options) throws Exception {
 		List<String> platforms = this.platforms(platform);
 		if (platforms.size() == 0)
-			error("No supported platform " + (platform.equals("*") ? "" : "[" + platform +"]"));
+			error("No supported platform " + (platform.equals("*") ? "" : "[" + platform +"]."));
 
 		return this.publish(app, platforms, track, options);
 	}
@@ -129,7 +129,7 @@ public class Engine {
 			this.build(app, platform, options);
 			println("Publishing " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] to " + store(platform) + " [" + track + "]...");
 			FastlanePublisher.publisher(platform, this).publish(app, new File("build/" + platform + "/" + app.getName().toLowerCase() + "." + (platform.equals("android") ? "apk" : "ipa")), track, options).onComplete(result -> {
-				println("Publish to " + store(platform) + " complete\n");
+				println("Publish to " + store(platform) + " complete.\n");
 			}).onError(exception -> this.error(exception, options));
 		}
 
