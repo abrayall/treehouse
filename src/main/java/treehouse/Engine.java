@@ -96,7 +96,7 @@ public class Engine {
 	protected Engine build(App app, List<String> platforms, Map<String, String> options) throws Exception {
 		for (String platform : platforms) {
 			File output = new File("build/" + platform + "/");
-			if (output.latest() > this.source().latest())
+			if (output.latest() > this.source().latest() && output.latest() > new File("config.xml").latest())
 				println("Build of " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] for " + platform + " is up to date.\n");
 			else {
 				output.delete();
