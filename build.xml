@@ -41,7 +41,7 @@
 		<tar destfile="${build.dir}/artifacts/${artifact.name}.tar">
 			<tarfileset dir="${build.dir}/artifacts" includes="*.jar" prefix="lib" dirmode="777" filemode="777" />
 			<tarfileset dir="${library.dir}/main" includes="*.jar" prefix="lib" dirmode="777" filemode="777" />
-			<tarfileset dir="${resource.dir}/scripts" includes="*.*" prefix="bin" dirmode="777" filemode="777" />
+			<tarfileset dir="${resource.dir}/scripts" includes="*" prefix="bin" dirmode="777" filemode="777" />
 		</tar>
 	</target>
 	
