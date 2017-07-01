@@ -39,7 +39,7 @@ public class Main extends cilantro.Main {
 		else
 			help();
 		
-		return 1;
+		return null;
 	}
 
 	public void help() {
@@ -97,6 +97,6 @@ public class Main extends cilantro.Main {
 	}
 	
 	public static void main(String[] arguments) throws Exception {
-		new Main().initialize(arguments).execute();
+		main(Main.class, arguments);
 	}
 }
