@@ -1,7 +1,6 @@
 package treehouse;
 
-import static javax.util.Properties.properties;
-import static javax.util.Properties.property;
+import static javax.util.Properties.*;
 
 import javax.io.File;
 import javax.io.Streams;
@@ -100,10 +99,6 @@ public class App {
 	
 	public static App load(Properties properties) {
 		return new App().set(properties);
-	}
-	
-	public static void main(String[] arguments) throws Exception {
-		System.out.println(App.fromConfigXml(new File("/tmp/myapp/config.xml")));
 	}
 	
 	protected static String TEMPLATE = 	
