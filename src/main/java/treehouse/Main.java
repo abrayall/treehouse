@@ -4,10 +4,21 @@ import javax.io.File;
 import javax.util.List;
 import javax.util.Map;
 
+import static javax.io.File.*;
+import static javax.util.Map.*;
+import static javax.util.Properties.*;
+
 import treehouse.version.Version;
 
 public class Main extends cilantro.Main {
 	public Integer execute(List<String> parameters, Map<String, String> options) throws Exception {
+		return run(parameters, merge(options, 
+			file(System.getProperty("user.home", ".")),
+			file(".")
+		));
+	}
+	
+	public Integer run(List<String> parameters, Map<String, String> options) throws Exception {
 		println("---------------------------------------");
 		println("${format(Treehouse - Mobile App Toolchain, blue, bold)} ${format(v" + Version.getVersion() + ", yellow)}");
 		println("---------------------------------------");
@@ -17,7 +28,7 @@ public class Main extends cilantro.Main {
 			println("  [parameters]: " + parameters.toString().replace("[", "").replace("]", ""));
 			println("     [options]: " + options.toString().replace("{", "").replace("}", "") + "\n");
 		}
-		
+
 		File config = new File("config.xml");
 		if (config.exists() == false)
 			error("Not a valid mobile app project directory");
@@ -94,6 +105,17 @@ public class Main extends cilantro.Main {
 
 	protected String[] empty() {
 		return new String[0];
+	}
+	
+	protected Map<String, String> merge(Map<String, String> options, File... locations) {
+		Map<String, String> merged = map();
+		for (File location : locations) {
+			properties(file(location, ".treehouse/settings"), properties()).each((key, value) -> {
+				merged.put(key.toString(), value.toString());
+			});
+		}
+		
+		return merged.put(options);
 	}
 	
 	public static void main(String[] arguments) throws Exception {
