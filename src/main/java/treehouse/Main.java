@@ -55,8 +55,7 @@ public class Main extends cilantro.Main {
 
 	public void help() {
 		println();
-		println("Usage:");
-		println("treehouse [command]");
+		println("Usage: treehouse [command]");
 		println("  commands: ");
 		println("    - list:    lists the supported platforms");
 		println("    - clean:   cleans the build work area");
