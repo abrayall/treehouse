@@ -91,12 +91,12 @@ public abstract class CordovaBuilder {
 		}
 
 		public Future<File> build(App app, Map<String, String> options) throws Exception {
-			return new Process(this.engine.cordova().build(app, directory, "ios", options, map(), list())).future(File.class).onTerminate(this::finish).onOutput(this::handle);
+			return new Process(this.engine.cordova().build(app, directory, "ios", options, map(), list())).future(File.class).onTerminate(this::finish).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false"))));
 		}
 
-		public void handle(String line, Future<File> future) {
-			//if (verbose)
-			//	System.out.println("  [cordova] " + line);
+		public void handle(String line, Future<File> future, Boolean verbose) {
+			if (verbose)
+				System.out.println("  [cordova] " + line);
 
 			if (line.contains("Results") && line.contains(".ipa'")) {
 				this.state = "success";
