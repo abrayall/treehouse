@@ -58,9 +58,11 @@ public class Engine {
 	protected Engine clean(App app, List<String> platforms, Map<String, String> options) throws Exception {
 		for (String platform : platforms) {
 			File output = new File("build/" + platform + "/");
-			if (output.exists()) {
+			File work = new File("platforms/" + platform + "/build");
+			if (output.exists() || work.exists()) {
 				println("Cleaning " + app.getName() + " [" + app.getId() + "] [v" + app.getVersion() + "] for " + platform + "...");
 				output.delete();
+				work.delete();
 			}
 		}
 		
