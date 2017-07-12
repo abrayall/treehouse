@@ -5,6 +5,7 @@ import static javax.util.Map.*;
 import static javax.util.Properties.*;
 
 import javax.io.File;
+import javax.lang.Try;
 import javax.util.List;
 import javax.util.Map;
 import javax.util.Properties;
@@ -12,11 +13,15 @@ import javax.util.Properties;
 import treehouse.version.Version;
 
 public class Main extends cilantro.Main {
+	
+	protected static Map<String, File> scopes = map(
+		entry("local",  file(".treehouse/settings")),
+		entry("user",   file(file(System.getProperty("user.home", "~")), ".treehouse/settings")),
+		entry("global", file("/etc/treehouse/settings"))
+	);
+	
 	public Integer execute(List<String> parameters, Map<String, String> options) throws Exception {
-		return run(parameters, merge(options, 
-			file(System.getProperty("user.home", ".")),
-			file(".")
-		));
+		return run(parameters, merge(options, scopes.get("user"), scopes.get("local")));
 	}
 	
 	public Integer run(List<String> parameters, Map<String, String> options) throws Exception {
@@ -48,6 +53,8 @@ public class Main extends cilantro.Main {
 			engine.publish(app, parameters.get(1, "*"), options.get("track", "production"), options);
 		else if (matches(parameters, "list"))
 			platforms(engine);
+		else if (matches(parameters, "settings"))
+			settings();
 		else if (matches(parameters, "set", ".*"))
 			set(parameters.get(1), "", options);		
 		else if (matches(parameters, "set", ".*", ".*"))
@@ -94,12 +101,28 @@ public class Main extends cilantro.Main {
 		System.exit(code);
 	}
 
-	public void set(String key, String value, Map<String, String> options) throws Exception {
-		String scope = options.get("scope", "local").toLowerCase();
-		if (scope.equals("local") == false && scope.equals("global") == false)
-			scope = "local";
+	public void settings() throws Exception {
+		println();
+		println("Settings:");
+		settings("global");
+		settings("user");
+		settings("local");
+	}
+	
+	public void settings(String scope) throws Exception {
+		settings(scope, Try.attempt(() -> properties(scopes.get(scope)), properties()), scopes.get(scope));
+	}
+	
+	public void settings(String scope, Properties properties, File file) {
+		println("  " + scope + " [" + file + "]");
+		for (Object key : properties.keySet())
+			println("    " + key + "=" + properties.get(key));
 		
-		set(file(scope.equals("local") ? file(".") : file(System.getProperty("user.home", ".")), ".treehouse/settings").mkdirs(), key, value);
+		println();
+	}
+	
+	public void set(String key, String value, Map<String, String> options) throws Exception {
+		set(scopes.get(options.get("scope", "local").toLowerCase(), scopes.get("local")).mkdirs(), key, value);
 	}
 	
 	public void set(File settings, String key, String value) throws Exception {
@@ -140,7 +163,7 @@ public class Main extends cilantro.Main {
 	protected Map<String, String> merge(Map<String, String> options, File... locations) {
 		Map<String, String> merged = map();
 		for (File location : locations) {
-			properties(file(location, ".treehouse/settings"), properties()).each((key, value) -> {
+			properties(location, properties()).each((key, value) -> {
 				merged.put(key.toString(), value.toString());
 			});
 		}
