@@ -16,8 +16,9 @@ Treehouse = Cordova + Fastlane
  - [x] [v0.7.0](https://github.com/abrayall/treehouse/releases/download/v0.7.0/treehouse.tar) - Support set command and settings
  - [ ] v0.8.0 - Support MacOS
  - [ ] v0.9.0 - Support Windows
- - [ ] v0.10.0 - Support create command
- - [ ] v0.11.0 - Support setup command
+ - [ ] v0.10.0 - Support deploy command
+ - [ ] v0.11.0 - Support create command
+ - [ ] v0.12.0 - Support setup command
  
 ### Commands
 - treehouse list
@@ -28,5 +29,6 @@ Treehouse = Cordova + Fastlane
 - treehouse publish [platform=ios|android|* default=*] [--key=`location` default=resources/android/play.json] [--username=`username`] [--password=`password`] [--verbose=true]
 
 ##### Coming Soon...
+- treehouse deploy [device|emulator]
 - treehouse setup [platform]
 - treehouse create [name] [id]
