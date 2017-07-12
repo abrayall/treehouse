@@ -104,7 +104,6 @@ public class Main extends cilantro.Main {
 	}
 
 	public void settings() throws Exception {
-		println();
 		println("Settings:");
 		settings("global");
 		settings("user");
@@ -118,7 +117,7 @@ public class Main extends cilantro.Main {
 	public void settings(String scope, Properties properties, File file) {
 		println("  " + scope + " [" + file + "]");
 		for (Object key : properties.keySet())
-			println("    " + key + "=" + properties.get(key));
+			println("    - " + key + "=" + properties.get(key));
 		
 		println();
 	}
