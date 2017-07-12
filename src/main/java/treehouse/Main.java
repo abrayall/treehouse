@@ -47,6 +47,10 @@ public class Main extends cilantro.Main {
 			engine.publish(app, parameters.get(1, "*"), options.get("track", "production"), options);
 		else if (matches(parameters, "list"))
 			platforms(engine);
+		else if (matches(parameters, "set", ".*"))
+			set(parameters.get(1), "", options);		
+		else if (matches(parameters, "set", ".*", ".*"))
+			set(parameters.get(1), parameters.get(2), options);
 		else
 			help();
 		
@@ -89,6 +93,19 @@ public class Main extends cilantro.Main {
 		System.exit(code);
 	}
 
+	public void set(String key, String value, Map<String, String> options) throws Exception {
+		String scope = options.get("scope", "local").toLowerCase();
+		if (scope.equals("local") == false && scope.equals("global") == false)
+			scope = "local";
+		
+		set(file(scope.equals("local") ? file(".") : file(System.getProperty("user.home", ".")), ".treehouse/settings").mkdirs(), key, value);
+	}
+	
+	public void set(File settings, String key, String value) throws Exception {
+		properties(settings).set(key, value).store(settings.outputStream());
+		println("\nSet " + key + " to " + value + " in file " + settings + "\n");
+	}
+	
 	protected boolean matches(List<String> parameters, String... values) {
 		if (parameters.size() > values.length)
 			return false;
