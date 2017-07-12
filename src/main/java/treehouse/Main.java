@@ -1,12 +1,12 @@
 package treehouse;
 
-import javax.io.File;
-import javax.util.List;
-import javax.util.Map;
-
 import static javax.io.File.*;
 import static javax.util.Map.*;
 import static javax.util.Properties.*;
+
+import javax.io.File;
+import javax.util.List;
+import javax.util.Map;
 
 import treehouse.version.Version;
 
@@ -26,7 +26,7 @@ public class Main extends cilantro.Main {
 		if (options.get("verbose", "false").equals("true")) {
 			println();
 			println("  [parameters]: " + parameters.toString().replace("[", "").replace("]", ""));
-			println("     [options]: " + options.toString().replace("{", "").replace("}", "") + "\n");
+			println("     [options]: " + options.map((key, value) -> key.equals("password") ? value.replaceAll(".", "*") : value).toString().replace("{", "").replace("}", "") + "\n");
 		}
 
 		File config = new File("config.xml");
