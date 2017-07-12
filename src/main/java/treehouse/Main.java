@@ -69,11 +69,13 @@ public class Main extends cilantro.Main {
 		println();
 		println("Usage: treehouse [command]");
 		println("  commands: ");
-		println("    - list:    lists the supported platforms");
-		println("    - clean:   cleans the build work area");
-		println("    - run:     runs the app in browser");
-		println("    - develop: runs the app in browser and reloads on code changes");
-		println("    - build:   builds the app for all supported platforms");
+		println("    - list:     lists the supported platforms");
+		println("    - clean:    cleans the build work area");
+		println("    - run:      runs the app in browser");
+		println("    - develop:  runs the app in browser and reloads on code changes");
+		println("    - build:    builds the app for all supported platforms");
+		println("    - settings: list all the current settings in all scopes");
+		println("    - set:      sets a setting in a given scope");
 		println();
 	}
 
