@@ -7,6 +7,7 @@ import static javax.util.Properties.*;
 import javax.io.File;
 import javax.util.List;
 import javax.util.Map;
+import javax.util.Properties;
 
 import treehouse.version.Version;
 
@@ -102,8 +103,21 @@ public class Main extends cilantro.Main {
 	}
 	
 	public void set(File settings, String key, String value) throws Exception {
-		properties(settings).set(key, value).store(settings.outputStream());
-		println("\nSet " + key + " to " + value + " in file " + settings + "\n");
+		Properties properties = properties(settings);
+		if (value.equals("") == false)
+			set(settings, properties, key, value);
+		else
+			delete(settings, properties, key);
+	}
+
+	protected void set(File settings, Properties properties, String key, String value) throws Exception {
+		properties.set(key, value).store(settings.outputStream());
+		println("\nSet '" + key + "' to '" + value + "' [file " + settings + "].\n");
+	}
+
+	protected void delete(File settings, Properties properties, String key) throws Exception {
+		properties.delete(key).store(settings.outputStream());
+		println("\nDeleted '" + key + "' [file " + settings + "].\n");	
 	}
 	
 	protected boolean matches(List<String> parameters, String... values) {
