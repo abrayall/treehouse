@@ -13,7 +13,7 @@ Treehouse = Cordova + Fastlane
  - [x] v0.4.0 - Support build command with Corova for iOS 
  - [x] v0.5.0 - Support publish command with Faslane for Apple iTunes store
  - [x] [v0.6.0](https://github.com/abrayall/treehouse/releases/download/v0.6.0/treehouse.tar) - Support clean command
- - [ ] v0.7.0 - Support set command
+ - [x] [v0.7.0](https://github.com/abrayall/treehouse/releases/download/v0.7.0/treehouse.tar) - Support set command and settings
  - [ ] v0.8.0 - Support MacOS
  - [ ] v0.9.0 - Support Windows
  - [ ] v0.10.0 - Support create command
@@ -28,6 +28,5 @@ Treehouse = Cordova + Fastlane
 - treehouse publish [platform=ios|android|* default=*] [--key=`location` default=resources/android/play.json] [--username=`username`] [--password=`password`] [--verbose=true]
 
 ##### Coming Soon...
-- treehouse set [key] [value] [--scope=local|user|global default=local]
 - treehouse setup [platform]
 - treehouse create [name] [id]
