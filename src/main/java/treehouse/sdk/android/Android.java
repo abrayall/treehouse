@@ -3,15 +3,18 @@ package treehouse.sdk.android;
 
 import javax.io.File;
 import javax.lang.Try;
+import javax.util.Map;
 
 import static javax.lang.Try.*;
 
 public class Android {
 
 	protected File sdk;
+	protected File studio;
 
-	public Android() {
-		this(Try.attempt(() -> locate()));
+	public Android(Map<String, String> options) {
+		this.sdk = options.containsKey("android.sdk") == true ? new File(options.get("android.sdk")) : Try.attempt(() -> locate());
+		this.studio = options.containsKey("android.studio") == true ? new File(options.get("android.sdk")) : null;
 	}
 
 	public Android(File sdk) {
@@ -23,7 +26,7 @@ public class Android {
 	}
 
 	public File studio() {
-		return new File(this.sdk.toFile().getParentFile(), "studio");
+		return this.studio != null ? this.studio : new File(this.sdk.toFile().getParentFile(), "studio");
 	}
 
 	public boolean installed() {

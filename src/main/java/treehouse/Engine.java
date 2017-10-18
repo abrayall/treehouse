@@ -30,31 +30,31 @@ public class Engine {
 
 	private File directory;
 	private Console console;
-	
+
 	private Cordova cordova;
 	private Fastlane fastlane;
 	private Android android;
 
-	public Engine(File directory, Console console) {
+	public Engine(File directory, Map<String, String> options, Console console) {
 		this.directory = directory;
 		this.console = console;
 		this.cordova = new Cordova();
-		this.android = new Android();
+		this.android = new Android(options);
 		this.fastlane = new Fastlane();
 	}
 
 	public Engine clean(App app) throws Exception {
 		return this.clean(app, "*");
 	}
-	
+
 	public Engine clean(App app, String platform) throws Exception {
 		return this.build(app, platform, map());
 	}
-	
+
 	public Engine clean(App app, String platform, Map<String, String> options) throws Exception {
 		return this.clean(app, this.platforms(platform), options);
 	}
-	
+
 	protected Engine clean(App app, List<String> platforms, Map<String, String> options) throws Exception {
 		for (String platform : platforms) {
 			File output = new File("build/" + platform + "/");
@@ -65,11 +65,11 @@ public class Engine {
 				work.delete();
 			}
 		}
-		
+
 		println("Clean complete.\n");
 		return this;
 	}
-	
+
 	public Engine run(App app) throws Exception {
 		return this.run(app, map());
 	}
@@ -94,7 +94,7 @@ public class Engine {
 
 		return this.build(app, platforms, options);
 	}
-	
+
 	protected Engine build(App app, List<String> platforms, Map<String, String> options) throws Exception {
 		for (String platform : platforms) {
 			File output = new File("build/" + platform + "/");

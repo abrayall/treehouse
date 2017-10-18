@@ -40,7 +40,7 @@ public class Main extends cilantro.Main {
 			error("Not a valid mobile app project directory");
 
 		App app = App.fromConfigXml(config);
-		Engine engine = new Engine(new File("."), console);
+		Engine engine = new Engine(new File("."), options, console);
 		if (matches(parameters, empty()) || matches(parameters, "run"))
 			engine.run(app, options);
 		else if (matches(parameters, "clean", ".*"))
