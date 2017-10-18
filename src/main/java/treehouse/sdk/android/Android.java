@@ -8,22 +8,26 @@ import static javax.lang.Try.*;
 
 public class Android {
 
-	protected File home;
+	protected File sdk;
 
 	public Android() {
 		this(Try.attempt(() -> locate()));
 	}
 
-	public Android(File home) {
-		this.home = home;
+	public Android(File sdk) {
+		this.sdk = sdk;
 	}
 
-	public File home() {
-		return this.home;
+	public File sdk() {
+		return this.sdk;
+	}
+
+	public File studio() {
+		return new File(this.sdk.toFile().getParentFile(), "studio");
 	}
 
 	public boolean installed() {
-		return this.home != null && this.home.exists();
+		return this.sdk != null && this.sdk.exists();
 	}
 
 	//TODO: setup sdk

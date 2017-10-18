@@ -45,8 +45,11 @@ public abstract class CordovaBuilder {
 		public Future<File> build(App app, Map<String, String> options) throws Exception {
 			File certificate = certificate(app);
 			List<String> extra = list("--", "--keystore=" + certificate, "--storePassword=" + app.getName().toLowerCase(), "--password=" + app.getName().toLowerCase(), "--alias=" + app.getName().toLowerCase());
+			File sdk = this.engine.android().sdk();
+			File studio = this.engine.android().studio();
 			return new Process(this.engine.cordova().build(app, directory, "android", options, map(
-				entry("ANDROID_HOME", this.engine.android().home().toString())
+				entry("ANDROID_HOME", sdk.toString()),
+				entry("PATH", System.getenv("PATH") + ":" + sdk + "/tools:" + sdk + "/tools/bin:" + sdk + "/platform-tools:" + studio + "/gradle/gradle-3.2/bin")
 			), extra)).future(File.class).onTerminate(this::finish).onOutput((line, job) -> this.handle(line, job, Boolean.parseBoolean(options.get("verbose", "false"))));
 		}
 

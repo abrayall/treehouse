@@ -13,17 +13,17 @@ import javax.util.Properties;
 import treehouse.version.Version;
 
 public class Main extends cilantro.Main {
-	
+
 	protected static Map<String, File> scopes = map(
 		entry("local",  file(".treehouse/settings")),
 		entry("user",   file(file(System.getProperty("user.home", "~")), ".treehouse/settings")),
 		entry("global", file("/etc/treehouse/settings"))
 	);
-	
+
 	public Integer execute(List<String> parameters, Map<String, String> options) throws Exception {
 		return run(parameters, merge(options, scopes.get("user"), scopes.get("local")));
 	}
-	
+
 	public Integer run(List<String> parameters, Map<String, String> options) throws Exception {
 		println("---------------------------------------");
 		println("${format(Treehouse - Mobile App Toolchain, blue, bold)} ${format(v" + Version.getVersion() + ", yellow)}");
@@ -38,7 +38,7 @@ public class Main extends cilantro.Main {
 		File config = new File("config.xml");
 		if (config.exists() == false)
 			error("Not a valid mobile app project directory");
-		
+
 		App app = App.fromConfigXml(config);
 		Engine engine = new Engine(new File("."), console);
 		if (matches(parameters, empty()) || matches(parameters, "run"))
@@ -56,12 +56,12 @@ public class Main extends cilantro.Main {
 		else if (matches(parameters, "settings"))
 			settings();
 		else if (matches(parameters, "set", ".*"))
-			set(parameters.get(1), "", options);		
+			set(parameters.get(1), "", options);
 		else if (matches(parameters, "set", ".*", ".*"))
 			set(parameters.get(1), parameters.get(2), options);
 		else
 			help();
-		
+
 		return null;
 	}
 
@@ -83,7 +83,7 @@ public class Main extends cilantro.Main {
 		println();
 		println("Supported platforms:");
 		for (String platform : engine.platforms())
-			println("  - " + platform + " " + (platform.equals("android") ? "[" + engine.android().home() + "]" : ""));
+			println("  - " + platform + " " + (platform.equals("android") ? "[" + engine.android().sdk() + "]" : ""));
 
 		println();
 	}
@@ -109,23 +109,23 @@ public class Main extends cilantro.Main {
 		settings("user");
 		settings("local");
 	}
-	
+
 	public void settings(String scope) throws Exception {
 		settings(scope, Try.attempt(() -> properties(scopes.get(scope)), properties()), scopes.get(scope));
 	}
-	
+
 	public void settings(String scope, Properties properties, File file) {
 		println("  " + scope + " [" + file + "]");
 		for (Object key : properties.keySet())
 			println("    - " + key + "=" + (key.equals("password") ? properties.get(key).toString().replaceAll(".", "*") : properties.get(key)));
-		
+
 		println();
 	}
-	
+
 	public void set(String key, String value, Map<String, String> options) throws Exception {
 		set(scopes.get(options.get("scope", "local").toLowerCase(), scopes.get("local")).mkdirs(), key, value);
 	}
-	
+
 	public void set(File settings, String key, String value) throws Exception {
 		Properties properties = properties(settings);
 		if (value.equals("") == false)
@@ -141,9 +141,9 @@ public class Main extends cilantro.Main {
 
 	protected void delete(File settings, Properties properties, String key) throws Exception {
 		properties.delete(key).store(settings.outputStream());
-		println("\nDeleted '" + key + "' [file " + settings + "].\n");	
+		println("\nDeleted '" + key + "' [file " + settings + "].\n");
 	}
-	
+
 	protected boolean matches(List<String> parameters, String... values) {
 		if (parameters.size() > values.length)
 			return false;
@@ -160,7 +160,7 @@ public class Main extends cilantro.Main {
 	protected String[] empty() {
 		return new String[0];
 	}
-	
+
 	protected Map<String, String> merge(Map<String, String> options, File... locations) {
 		Map<String, String> merged = map();
 		for (File location : locations) {
@@ -168,10 +168,10 @@ public class Main extends cilantro.Main {
 				merged.put(key.toString(), value.toString());
 			});
 		}
-		
+
 		return merged.put(options);
 	}
-	
+
 	public static void main(String[] arguments) throws Exception {
 		main(Main.class, arguments);
 	}

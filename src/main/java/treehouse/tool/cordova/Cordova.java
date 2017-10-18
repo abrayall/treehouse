@@ -21,27 +21,27 @@ public class Cordova extends Tool {
 	protected String name() {
 		return "cordova";
 	}
-	
+
 	public String getVersion() throws Exception {
 		return Try.attempt(() -> execute("--version"), "0.0.0");
 	}
-	
+
 	public Cordova install() throws Exception {
 		// install node.js
 		// install cordova
 		return this;
 	}
-	
+
 	public Cordova create(App app, File directory) throws Exception {
 		//System.out.println("Creating new app project '" + app.getName() + "' [" + app.getId() + ", " + directory + "]...");
 		//this.execute("create", directory.mkdirs().path(), app.getId(), app.getName());
-		
+
 		System.out.println("Adding support for browser...");
 		this.execute(directory, "platform", "add", "browser");
-		
+
 		//System.out.println("Adding support for android...");
 		//this.execute(this.directory, "platform", "add", "android");
-		
+
 		//System.out.println("Adding support for ios...");
 		//this.execute(this.directory, "platform", "add", "ios");
 
@@ -53,7 +53,7 @@ public class Cordova extends Tool {
 			System.out.println("Adding support for browser...");
 			this.execute(directory, "platform", "add", "browser");
 		}
-		
+
 		//this.write(new File(directory, "config.xml"), app.toConfigXml());
 		return this.patch(directory);
 	}
@@ -61,36 +61,36 @@ public class Cordova extends Tool {
 	public Process clean(App app, File directory, String platform) throws Exception {
 		return Process.process(this.process(directory, "clean", platform).start());
 	}
-	
+
 	public Process build(App app, File directory, String platform, Map<String, String> options, Map<String, String> environment, List<String> extra) throws Exception {
 		this.setup(app, directory);
 		return Runtime.execute(builder(environment, directory, parameters(list("build", platform, "--" + options.get("type", "release"), "--device"), extra)));
 	}
-	
+
 	public Process run(App app, File directory) throws Exception {
 		this.build(app, directory, "browser", map(), map(), list()).waitFor();
 		return Runtime.execute(Process.builder(directory.toFile(), new File(directory, "/platforms/browser/cordova/run").toString(), "browser", "--target=none", "--port=8015"));
 	}
-	
+
 	protected Cordova patch(File directory) throws Exception {
-		File run = new File(directory, "platforms/browser/cordova/run");
-		run.write(run.read().replace("return cordovaServe", "return args.target == \"none\" ? null : cordovaServe"));
+		File run = new File(directory, "platforms/browser/cordova/lib/run.js");
+		run.write(run.read().replace("return server.launchBrowser(", "if (args.target && args.target != 'none') return server.launchBrowser("));
 		return this;
 	}
-	
+
 	protected String[] parameters(List<String> base, List<String> extra) {
 		base.addAll(extra);
 		return base.toArray(new String[0]);
 	}
-	
+
 	protected void write(File file, String contents) throws Exception {
 		Streams.write(contents, new FileOutputStream(file.toFile()));
 	}
-	
+
 	protected String validate(String output) throws Exception {
 		if (output.contains("Error:"))
 			throw new Exception (output.replace("Error:", ""));
-		
+
 		return output;
 	}
 }
